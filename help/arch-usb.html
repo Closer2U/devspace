@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<title>ArchLinux USB</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width">
+<meta name="description" content="Guide to installing Arch Linux on a USB stick.">
+<meta name="keywords" content="Linux, Arch Linux, USB, install, persistent">
+<meta name="author" content="Chris Magyar">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+<header>
+<nav>
+  <a href="../index-2.html">about</a>
+  <span class="active">arch-usb</span>
+ <!-- <a href="../../external.html?link=http://valleycat.org/" target="_blank">valleycat</a>
+  <a href="../../external.html?link=https://github.com/arcmags/ramroot" target="_blank">ramroot</a>
+  <a href="../../external.html?link=http://arxiv.org/pdf/1610.01011" target="_blank">symmetry</a>-->
+</nav>
+
+<pre class="wide">
+   _          _    _    _                _   _ ___ ___
+  /_\  _ _ __| |_ | |  (_)_ _ _  ___ __ | | | / __| _ )
+ / _ \| '_/ _| ' \| |__| | ' \ || \ \ / | |_| \__ \ _ \
+/_/ \_\_| \__|_||_|____|_|_||_\_,_/_\_\  \___/|___/___/
+</pre>
+</header>
+
+<main>
+<nav>
+  <a href="arch-usb-intro.html" target="_self">Introduction</a>
+  <a href="arch-usb-iso.html" target="_self">Live ISO</a>
+  <span class="active">Arch USB</span>
+  <hr>
+  <a href="#install_base" target="_self">Install</a>
+  <div>
+    <a href="#wipe" target="_self">wipe</a>
+    <a href="#partition" target="_self">partition</a>
+    <a href="#format" target="_self">format</a>
+    <a href="#mount" target="_self">mount</a>
+    <a href="#pacstrap" target="_self">pacstrap</a>
+    <a href="#fstab" target="_self">fstab</a>
+  </div>
+  <a href="#config_base" target="_self">Configure</a>
+  <div>
+    <a href="#locale" target="_self">locale</a>
+    <a href="#timedate" target="_self">time/date</a>
+    <a href="#hostname" target="_self">hostname</a>
+    <a href="#password" target="_self">password</a>
+    <a href="#bootloader" target="_self">bootloader</a>
+    <a href="#networking" target="_self">networking</a>
+    <a href="#user" target="_self">user</a>
+    <a href="#sudo" target="_self">sudo</a>
+    <a href="#noatime" target="_self">noatime</a>
+    <a href="#journal" target="_self">journal</a>
+    <a href="#mkinitcpio" target="_self">mkinitcpio</a>
+    <a href="#nomodeset" target="_self">nomodeset</a>
+    <a href="#microcode" target="_self">microcode</a>
+    <a href="#dns_over_tls" target="_self">dns</a>
+    <a href="#interface_names" target="_self">interfaces</a>
+  </div>
+</nav>
+
+<p>This page explains how to install Arch Linux on a USB flash drive. The end
+result is a persistent installation identical to that on a normal hard drive
+along with several optimizations aimed at running Linux on removable flash
+media. It is compatible with both BIOS and UEFI booting modes.</p>
+
+<p>The only packages explicitly installed are <i>linux</i>, <i>linux-firmware</i>,
+<i>base</i>, <i>efibootmgr</i>, <i>grub</i>, <i>iwd</i>, <i>polkit</i>,
+<i>sudo</i>, and <i>vim</i>. Basic services are handled by systemd.</p>
+
+<h1 id="install_base">Install Base System</h1>
+
+<p>Determine the target USB device name:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+lsblk
+</div>
+
+<p>For the remainder of this guide, the device name will be
+referred to as <em>/dev/sdX</em>.</p>
+
+<h2 id="wipe">wipe (optional)</h2>
+
+<p>Use dd to write the USB with all zeros, permanently erasing all data:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+dd if=/dev/zero of=<em>/dev/sdX</em> status=progress &amp;&amp; sync
+</div>
+
+<p>Expect this to take a relatively long time (hour+) depending on
+the size of the USB.</p>
+
+<h2 id="partition">partition</h2>
+
+Create a 10M BIOS partition, a 500M EFI
+partition, and a Linux partition with the remaining space:</p>
+
+<div class="code"><span class="prompt"># </span>
+sgdisk -o -n 1:0:+10M -t 1:EF02 -n 2:0:+500M -t 2:EF00 -n 3:0:0 -t 3:8304 <em>/dev/sdX</em>
+</div>
+
+<h2 id="format">format</h2>
+
+<p>Do not format the <em>/dev/sdX1</em> block.  This is the BIOS/MBR
+parition.</p>
+
+<p>Format the 500MB EFI system partition with a FAT32 filesystem:</p>
+
+<div class="code"><span class="prompt"># </span>
+mkfs.fat -F32 <em>/dev/sdX2</em>
+</div>
+
+<p>Format the Linux partition with an ext4 filesystem:</p>
+
+<div class="code"><span class="prompt"># </span>
+mkfs.ext4 <em>/dev/sdX3</em>
+</div>
+
+<h2 id="mount">mount</h2>
+
+<p>Mount the ext4 formatted partition as the root filesystem:</p>
+
+<div class="code"><span class="prompt"># </span>
+mkdir -p /mnt/usb<br>
+<span class="prompt"># </span> mount <em>/dev/sdX3</em> /mnt/usb
+</div>
+
+<p>Mount the FAT32 formatted EFI partition to <i>/boot</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+mkdir /mnt/usb/boot<br>
+<span class="prompt"># </span> mount <em>/dev/sdX2</em> /mnt/usb/boot
+</div>
+
+<h2 id="pacstrap">pacstrap</h2>
+
+<p>Download and install the Arch Linux base packages:</p>
+
+<div class="code"><span class="prompt"># </span>
+pacstrap /mnt/usb linux linux-firmware base vim
+</div>
+
+<h2 id="fstab">fstab</h2>
+
+<p>Generate a new <i>/etc/fstab</i> using UUIDs as source identifiers:</p>
+
+<div class="code"><span class="prompt"># </span>
+genfstab -U /mnt/usb &gt; /mnt/usb/etc/fstab
+</div>
+
+<h1 id="config_base">Configure Base System</h1>
+
+<p>Unless otherwise noted, all configuration is done within a chroot. Chroot into the new system:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+arch-chroot /mnt/usb
+</div>
+
+<p>Exit the chroot environment when finished by typing <i>exit</i>.</p>
+
+<h2 id="locale">locale</h2>
+
+<p>Use tab-completion to discover the appropriate entries for <em>region</em>
+and <em>city</em>:</p>
+
+<div class="code"><span class="prompt"># </span>
+ln -sf /usr/share/zoneinfo/<em>region</em>/<em>city</em> /etc/localtime
+</div>
+
+<p>Edit <i>/etc/locale.gen</i> and uncomment the
+desired language (for US English, uncomment <i>en_US.UTF-8 UTF-8</i>):</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/locale.gen
+</div>
+
+<p>Generate the locale information:</p>
+
+<div class="code"><span class="prompt"># </span>
+locale-gen
+</div>
+
+<p>Set the <i>LANG</i> variable in <i>/etc/locale.conf</i> (for US
+English, <em>localeline</em> is <i>en_US.UTF-8</i>):</p>
+
+<div class="code"><span class="prompt"># </span>
+echo LANG=<em>localeline</em> &gt; /etc/locale.conf
+</div>
+
+<h2 id="timedate">time/date</h2>
+
+<p>Generate <i>/etc/adjtime</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+hwclock --systohc
+</div>
+
+<h2 id="hostname">hostname</h2>
+
+<p>Create a <i>/etc/hostname</i> file containing the desired hostname on a
+single line:</p>
+
+<div class="code"><span class="prompt"># </span>
+echo <em>hostname</em> &gt; /etc/hostname
+</div>
+
+<p>Edit <i>/etc/hosts</i> to contain only the following content:</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/hosts
+<hr>
+<pre>
+127.0.0.1  localhost
+::1        localhost
+127.0.1.1  <em>hostname</em>.localdomain  <em>hostname</em>
+</pre>
+</div>
+
+<h2 id="password">password</h2>
+
+<p>Set the root password:</p>
+
+<div class="code"><span class="prompt"># </span>
+passwd
+</div>
+
+<h2 id="bootloader">bootloader</h2>
+
+<p>Install <i>grub</i> and <i>efibootmgr</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+pacman -S grub efibootmgr
+</div>
+
+<p>Install GRUB for both BIOS and UEFI booting modes:</p>
+
+<div class="code"><span class="prompt"># </span>
+grub-install --target=i386-pc --recheck <em>/dev/sdX</em><br>
+<span class="prompt"># </span>grub-install --target=x86_64-efi --efi-directory /boot --recheck --removable
+</div>
+
+<p>Generate a GRUB configuration:</p>
+
+<div class="code"><span class="prompt"># </span>
+grub-mkconfig -o /boot/grub/grub.cfg
+</div>
+
+<h2 id="networking">networking</h2>
+
+<p>Create a networkd configuration file with the following content to
+automatically establish wired connections:</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/systemd/network/20-eth.network
+<hr>
+<pre>
+[Match]
+Name=en*
+Name=eth*
+
+[Network]
+DHCP=yes
+IPv6PrivacyExtensions=yes
+
+[DHCPv4]
+RouteMetric=100
+
+[IPv6AcceptRA]
+RouteMetric=100
+</pre>
+</div>
+
+<p>Enable networkd:</p>
+
+<div class="code"><span class="prompt"># </span>
+systemctl enable systemd-networkd.service
+</div>
+
+<p>Install and enable <i>iwd</i> to allow user control over wireless interfaces:</p>
+
+<div class="code"><span class="prompt"># </span>
+pacman -S iwd<br>
+<span class="prompt"># </span> systemctl enable iwd.service
+</div>
+
+<p>Create a networkd configuration file with the following content for wireless
+connections:</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/systemd/network/20-wlan.network
+<hr>
+<pre>
+[Match]
+Name=wl*
+
+[Network]
+DHCP=yes
+IPv6PrivacyExtensions=yes
+
+[DHCPv4]
+RouteMetric=200
+
+[IPv6AcceptRA]
+RouteMetric=200
+</pre>
+</div>
+
+<p>Enable resolved:</p>
+
+<div class="code"><span class="prompt"># </span>
+systemctl enable systemd-resolved.service<br>
+</div>
+
+<p>NOTE: this command must be done outside of the chroot environment. Create link to <i>/run/systmed/resolve/stub-resolv.conf</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+ln -sf /run/systemd/resolve/stub-resolv.conf /mnt/usb/etc/resolv.conf
+</div>
+
+<p>Enable timesyncd:</p>
+
+<div class="code"><span class="prompt"># </span>
+systemctl enable systemd-timesyncd.service
+</div>
+
+<h2 id="user">user</h2>
+
+<p>Create a new user account and set its password:</p>
+
+<div class="code"><span class="prompt"># </span>
+useradd -m <em>user</em><br>
+<span class="prompt"># </span>
+passwd <em>user</em>
+</div>
+
+<p>Ensure the wheel group exists and add <em>user</em> to it:</p>
+
+<div class="code"><span class="prompt"># </span>
+groupadd wheel<br>
+<span class="prompt"># </span>usermod -aG wheel <em>user</em>
+</div>
+
+<h2 id="sudo">sudo</h2>
+
+<p>Install sudo:</p>
+
+<div class="code"><span class="prompt"># </span>
+pacman -S sudo
+</div>
+
+<p>Enable sudo for the sudo group by creating a rule in <i>/etc/sudoers.d/</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+EDITOR=vim visudo /etc/sudoers.d/10-sudo
+<hr>
+%sudo ALL=(ALL) ALL
+</div>
+
+<p>Ensure the sudo group exists and add <em>user</em> to it:</p>
+
+<div class="code"><span class="prompt"># </span>
+groupadd sudo<br>
+<span class="prompt"># </span>usermod -aG sudo <em>user</em>
+</div>
+
+<p>Install <i>polkit</i> to allow various commands (<i>reboot</i>
+and <i>shutdown</i>, among others) to be run by non-root users:</p>
+
+<div class="code"><span class="prompt"># </span>
+pacman -S polkit
+</div>
+
+<h2 id="noatime">noatime (optional)</h2>
+
+<p>Decrease excess writes to the USB by discarding file access times. Change
+each <i>relatime</i> or <i>atime</i> option to <i>noatime</i> in
+<i>/etc/fstab</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/fstab
+<hr>
+<pre>
+# <i>/dev/sdX3</i>
+UUID=<i>uuid1</i>  /      ext4  rw,noatime      0 1
+
+# <i>/dev/sdX2</i>
+UUID=<i>uuid2</i>  /boot  vfat  rw,noatime,<i>...</i>  0 2
+</pre>
+</div>
+
+<h2 id="journal">journal (optional)</h2>
+
+<p>Prevent the systemd journal service from writing to the USB by configuring
+it to use RAM. Create a drop-in config file with the following content:</p>
+
+<div class="code"><span class="prompt"># </span>
+mkdir -p /etc/systemd/journald.conf.d<br>
+<span class="prompt"># </span> vim /etc/systemd/journald.conf.d/10-volatile.conf
+<hr>
+<pre>
+[Journal]
+Storage=volatile
+SystemMaxUse=16M
+RuntimeMaxUse=32M
+</pre>
+</div>
+
+<h2 id="mkinitcpio">mkinitcpio (optional)</h2>
+
+<p>Ensure all modules are always included in the initcpio image. Remove the
+<i>autodetect</i> hook from the default options in
+<i>/etc/mkinitcpio.d/linux.preset</i> and disable fallback (fallback is now
+default):</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/mkinitcpio.d/linux.preset
+<hr>
+<pre>
+ALL_kver='/boot/vmlinuz-linux'
+PRESETS=('default')
+default_image='/boot/initramfs-linux.img'
+default_options='-S autodetect'
+<pre>
+</div>
+
+<p>Remove the existing fallback image:</p>
+
+<div class="code"><span class="prompt"># </span>
+rm /boot/initramfs-linux-fallback.img
+</div>
+
+<p>Generate a new initcpio image:</p>
+
+<div class="code"><span class="prompt"># </span>
+mkinitcpio -P
+</div>
+
+<h2 id="nomodeset">nomodeset (optional)</h2>
+
+<p>Create a GRUB menu item with the <i>nomodeset</i> kernel parameter. Copy the
+default <i>menuentry</i> from <i>/boot/grub/grub.cfg</i> into
+<i>/etc/grub.d/40_custom</i> and add the <i>nomodeset</i> kernel parameter:</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/grub.d/40_custom<br>
+<hr>
+<pre>
+...
+menuentry 'Arch Linux ... [nomodeset]' ...
+...
+linux /vmlinuz-linux ... nomodeset
+...
+</pre>
+</div>
+
+<p>Generate a new GRUB configuration:</p>
+
+<div class="code"><span class="prompt"># </span>
+grub-mkconfig -o /boot/grub/grub.cfg
+</div>
+
+<h2 id="microcode">microcode (optional)</h2>
+
+<p>Enable microcode updates. Install <i>amd-ucode</i> and <i>intel-ucode</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+pacman -S amd-ucode intel-ucode
+</div>
+
+<p>Add ucode image files to any desired custom entries in <i>/etc/grub.d/40_custom</i>:
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/grub.d/40_custom<br>
+<hr>
+<pre>
+...
+menuentry 'Arch Linux ...' ...
+...
+initrd /boot/amd-ucode.img /boot/intel-ucode.img ...
+...
+</pre>
+</div>
+
+<p>Generate a new GRUB configuration:</p>
+
+<div class="code"><span class="prompt"># </span>
+grub-mkconfig -o /boot/grub/grub.cfg
+</div>
+
+<h2 id="dns_over_tls">dns over tls (optional)</h2>
+
+<p>Enable DNS over TLS. Create
+<i>/etc/systemd/resolved.conf.d/10-dns-tls.conf</i>:</p>
+
+<div class="code"><span class="prompt"># </span>
+vim /etc/systemd/resolved.conf.d/10-dns-tls.conf<br>
+<hr>
+<pre>
+[Resolve]
+DNS=1.1.1.1#cloudflare-dns.com
+FallbackDNS=9.9.9.9#dns.quad9.net 8.8.8.8#dns.google
+DNSOverTLS=opportunistic
+</pre>
+</div>
+
+<h2 id="interface_names">interface names (optional)</h2>
+
+<p>Ensure that ethernet and wifi interfaces are always named <i>eth*</i> and
+<i>wlan*</i>. Revert to traditional device naming:</p>
+
+<div class="code"><span class="prompt"># </span>
+ln -s /dev/null /etc/udev/rules.d/80-net-setup-link.rules
+</div>
+
+</main>
+
+<footer>
+updated: 2025-01-20
+</footer>
+
+</body>
+
+</html>

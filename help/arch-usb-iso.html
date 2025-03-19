@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+<title>ArchLinux USB: Live ISO</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width">
+<meta name="description" content="Booting the Arch Linux live ISO.">
+<meta name="keywords" content="Linux, Arch Linux, USB, install, persistent">
+<!--<meta name="author" content="Chris Magyar">-->
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+<header>
+<nav>
+    <a href="../index-2.html">about</a>
+    <span class="active">arch-usb</span>
+ <!--   <a href="../bindi/index.html">bindi</a>
+    <a href="../../external.html?link=http://valleycat.org/" target="_blank">valleycat</a>
+    <a href="../../external.html?link=https://github.com/arcmags/ramroot" target="_blank">ramroot</a>
+    <a href="../../external.html?link=http://arxiv.org/pdf/1610.01011" target="_blank">symmetry</a>-->
+</nav>
+
+<pre class="wide">
+   _          _    _    _                _   _ ___ ___
+  /_\  _ _ __| |_ | |  (_)_ _ _  ___ __ | | | / __| _ )
+ / _ \| '_/ _| ' \| |__| | ' \ || \ \ / | |_| \__ \ _ \
+/_/ \_\_| \__|_||_|____|_|_||_\_,_/_\_\  \___/|___/___/
+</pre>
+</header>
+
+<main>
+<nav>
+    <a href="arch-usb-intro.html" target="_self">Introduction</a>
+    <span class="active">Live ISO</span>
+    <a href="arch-usb.html" target="_self">Arch USB</a>
+    <hr>
+    <a href="#boot_live" target="_self">Boot Live ISO</a>
+    <div>
+        <a href="#keys_language" target="_self">keys/language</a>
+    </div>
+    <a href="#connect" target="_self">Connect to Internet</a>
+    <div>
+        <a href="#wired" target="_self">wired</a>
+        <a href="#wireless" target="_self">wireless</a>
+        <a href="#live_time" target="_self">system time</a>
+    </div>
+</nav>
+
+<h1 id="boot_live">Boot Live ISO</h1>
+
+<p>Insert you USB or CD installation medium in the computer and boot it up.  Use
+the computer's boot menu (usually invoked with <i>[F12]</i> on a <a
+href="../../external.html?link=http://www.computerhope.com/jargon/b/boot_menu.htm" target="_blank">PC</a>
+or the <i>[option]</i> key on a <a
+href="../../external.html?link=https://support.apple.com/en-us/HT204417" target="_blank">Mac</a>) to
+select the inserted boot media.  When presented with the boot device selection
+menu, select the entry for either <i>BIOS</i> or <i>UEFI</i> as explained <a
+href="#BIOS_vs_UEFI" target="_self">above</a>.</p>
+
+<p>A bootloader menu will appear with several options.  Select the <i>Boot Arch
+Linux (x86_64)</i> or <i>(i686)</i> option as explained <a
+href="#i686_vs_x86_64" target="_self">above</a>.  After  a minimal amount of
+necessary drivers are loaded to RAM, you will be presented with a root <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/zsh" target="_blank">Z shell</a>
+prompt.</p>
+
+<h2 id="keys_language">keymap/language</h2>
+
+<p>The default console keymap and language in the live shell are, respectively,
+<a href="../../en.wikipedia.org/wiki/File_KB_United_States-NoAltGr.html"
+target="blank">US</a> and US English <a
+href="../../external.html?link=https://en.wikipedia.org/wiki/UTF-8" target="_blank">UTF-8</a>.  To change
+the language or keymap of the live shell, the following steps may be taken.</p>
+
+<p>If a different keyboard mapping is required, view the available keymaps:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+ls /usr/share/kbd/keymaps/**/*.map.gz | less
+</div>
+
+<p>Load the required keymap.  Here, <em>mapname</em> is the filename of the required map
+without path or file extension:</p>
+
+<div class="code"><span class="prompt"># </span>
+loadkeys <em>mapname</em>
+</div>
+
+<p>To change the language of the live root environment, edit
+<i>/etc/locale.gen</i> and uncomment the line containing your desired
+language:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+vim /etc/locale.gen
+<hr>
+en_US.UTF-8 UTF-8
+</div>
+
+<p>Generate the locale information:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+locale-gen
+</div>
+
+<p>Ensure the <i>LANG</i> variable in <i>/etc/locale.conf</i> is set
+(<em>localeline</em> is first part of the uncommented line in
+<i>/etc/locale.gen</i>):</p>
+
+<div class="code"><span class="prompt"># </span>
+echo LANG=<em>localeline</em> &gt; /etc/locale.conf
+</div>
+
+<h1 id="connect">Connect to the Internet</h1>
+
+<p>If there is an active networking cable plugged into the machine, the live
+shell will bring up the computer's network interface card and automatically
+attempt to lease an IP address from the network during bootup.  To check the
+network connection, ping some website:</p>
+
+<div class="code"><span class="prompt"># </span>
+ping -c1 google.com
+</div>
+
+<h2 id="wired">wired</h2>
+
+<p>Wired networking should work out-of-the-box on the installation ISO via
+networkd.  If you have an active networking cable plugged into the machine and
+you are unable to connect to the internet, you can begin troubleshooting by
+taking the following steps.</p>
+
+<p>View the interface names and statuses:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+ip link
+</div>
+
+<p>The name of the wired device is most likely <i>eth0</i> or <i>eno0</i>.</p>
+
+<div class="p">Ensure the network device is powered on:</p>
+
+<div class="code"><span class="prompt"># </span>
+ip link set <em>eth0</em> up
+</div>
+
+<p>Attempt to manually lease a DHCP IP address:</p>
+
+<div class="code"><span class="prompt"># </span>
+dhcpcd <em>eth0</em>
+</div>
+
+<p>View all the instances of dhcpcd:</p>
+
+<div class="code nomargin"><span class="prompt"># </span>
+systemctl list-units | grep dhcpcd
+</div>
+
+<p>View detailed information to identify any hardware issues:</p>
+
+<div class="code"><span class="prompt"># </span>
+systemctl status dhcpcd@<em>eth0</em>.service
+</div>
+
+<p>If you still can't connect to the internet, see the <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/Network_configuration"
+target="_blank">ArchWiki</a> for further help.</p>
+
+<h2 id="wireless">wireless</h2>
+
+<p>If a wired connection is unavailable or you prefer to use wifi, most wireless
+interfaces are supported by the drivers on the installation ISO.  Launch
+<i>iwctl</i> to control any wifi interfaces from the command line:</p>
+
+<div class="code"><span class="prompt"># </span>
+iwctl
+</div>
+
+<p>List all detected wifi devices:</p>
+
+<div class="code nomargin"><span class="prompt">[iwd]# </span>
+device list
+</div>
+
+<p>The wireless device is most likely named <i>wlan0</i>.</p>
+
+<p>Scan for networks:</p>
+
+<div class="code nomargin"><span class="prompt">[iwd]# </span>
+station <em>wlan0</em> scan
+</div>
+
+<p>List available networks:</p>
+
+<div class="code nomargin"><span class="prompt">[iwd]# </span>
+station <em>wlan0</em> get-networks
+</div>
+
+<p>Connect to a network:</p>
+
+<div class="code"><span class="prompt">[iwd]# </span>
+station <em>wlan0</em> connect <em>SSID</em>
+</div>
+
+<p>Exit <i>iwctl</i>:</p>
+
+<div class="code"><span class="prompt">[iwd]# </span>
+exit
+</div>
+
+<p>If you are unable to obtain a wireless network connection, see if any kernel
+drivers have been loaded for the wireless interface:</p>
+
+<div class="code"><span class="prompt"># </span>
+lspci -k | grep -A3 'Network controller'
+</div>
+
+<p>If no device is present or no drivers have been loaded, you are mostly out of
+luck; although it may be possible to import the proper drivers via another
+removable memory device, such a procedure is beyond the scope of this guide.  If
+you want to keep pursuing this route, checkout the official Linux wireless <a
+href="../../external.html?link=https://wireless.wiki.kernel.org/" target="_blank">wiki</a> and the
+ArchWiki wireless <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/Wireless_network_configuration#Installing_driver.2Ffirmware"
+target="_blank">page</a> to get started.</p>
+
+<h2 id="live_time">system time</h2>
+
+<p>Once connected to the internet, turn on the network time
+protocol to synchronize system time:</p>
+
+<div class="code"><span class="prompt"># </span>
+timedatectl set-ntp true
+</div>
+
+</main>
+
+<footer>
+updated: 2024-03-09
+</footer>
+
+</body>
+
+</html>

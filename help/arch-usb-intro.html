@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+
+
+<html lang="en">
+
+<head>
+<title>ArchLinux USB: Introduction</title>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta name="viewport" content="width=device-width">
+<meta name="description" content="Guide to installing Arch Linux on a USB stick.">
+<meta name="keywords" content="Linux, Arch Linux, USB, install, persistent">
+<meta name="author" content="">
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="../css/main.css">
+</head>
+
+<body>
+<header>
+<nav>
+    <a href="../index-2.html">about</a>
+    <span class="active">arch-usb</span>
+ <!--   <a href="../bindi/index.html">bindi</a>
+    <a href="../../external.html?link=http://valleycat.org/" target="_blank">valleycat</a>
+    <a href="../../external.html?link=https://github.com/arcmags/ramroot" target="_blank">ramroot</a>
+    <a href="../../external.html?link=http://arxiv.org/pdf/1610.01011" target="_blank">symmetry</a>-->
+</nav>
+
+<pre class="wide">
+   _          _    _    _                _   _ ___ ___
+  /_\  _ _ __| |_ | |  (_)_ _ _  ___ __ | | | / __| _ )
+ / _ \| '_/ _| ' \| |__| | ' \ || \ \ / | |_| \__ \ _ \
+/_/ \_\_| \__|_||_|____|_|_||_\_,_/_\_\  \___/|___/___/
+</pre>
+</header>
+
+<main>
+<nav>
+    <span class="active">Introduction</span>
+    <a href="arch-usb-iso.html" target="_self">Live ISO</a>
+    <a href="arch-usb.html" target="_self">Arch USB</a>
+    <hr>
+    <a href="#before" target="_self">Before You Begin</a>
+    <div>
+        <a href="#live_img" target="_self">live image</a>
+        <a href="#wired_wifi" target="_self">wired vs wifi</a>
+        <a href="#bios_uefi" target="_self">BIOS vs UEFI</a>
+        <a href="#secure_boot" target="_self">secure boot</a>
+        <a href="#localtime_utc" target="_self">localtime/UTC</a>
+    </div>
+    <a href="#why" target="_self">Why Arch Linux</a>
+    <div>
+        <a href="#partitioning" target="_self">partitioning</a>
+    </div>
+</nav>
+
+<h1 id="before">Before You Begin</h1>
+
+<p>Although a typical Arch Linux installation with a fully functional desktop
+environment usually ranges from about 3GB to 5GB, I recommend using at least a
+16GB stick. Being that this is an entirely portable Linux system of your own,
+you may want to load it up with a collection of some great GNU and open source
+software packages out there.  With some large packages like <a
+href="../../external.html?link=http://www.sagemath.org/" target="_blank">SageMath</a>, <a
+href="../../external.html?link=https://www.tug.org/texlive/" target="_blank">TeX Live</a>, and various
+developer tools, my current Arch Linux USB drive sits at around 12GB.</p>
+
+<h2 id="live_img">live image</h2>
+
+<p>You will also need to <a href="../../external.html?link=https://www.archlinux.org/download/"
+target="_blank">download</a> an Arch Linux bootable installation ISO and either
+burn it to a CD or write it to a different USB stick than the one you will be
+installing your persistent copy on.  I have used both methods with no problems,
+but the speed of installation is much greater when using a bootable USB
+stick.</p>
+
+<p>To write a bootable USB installation medium in Linux, run the following
+command where <em>/path/archlinux.iso</em> is the path of the downloaded ISO and
+<em>/dev/sdX</em> is the path of your unmounted target USB drive:</p>
+
+<div class="code"><span class="prompt"># </span>
+dd if=<em>/path/archlinux.iso</em> of=<em>/dev/sdX</em> status=progress &amp;&amp; sync
+</div>
+
+<p>To make a bootable USB using Windows, I have used the open source GUI tool <a
+href="../../external.html?link=https://rufus.akeo.ie/" target="_blank">Rufus</a> on several occasions
+without any issues.  If Rufus doesn't work for you, there are multiple other <a
+href="../../external.html?link=http://www.makeuseof.com/tag/10-tools-make-bootable-usb-iso-file/"
+target="_blank">programs</a> intended for the same thing.</p>
+
+<p>Users with a current working installation of Arch Linux can opt to forgo a
+new boot medium altogether and simply partition, format, <i>pacstrap</i>, and
+<i>arch-chroot</i> into the target USB drive instead.  The instructions to do so
+are not explicitly provided here as that is not the scope of this guide, but the
+important parts of the process are identical.</p>
+
+<h2 id="wired_wifi">wired vs wifi</h2>
+
+<p>For the actual installation you will need a computer connected to the
+internet.  A wired connection is definitely preferred as the bootable
+installation ISO is setup to automatically detect and connect to any wired
+network on bootup.  Also, any packages you choose to install will need to be
+downloaded from the Arch Linux repositories, and network speed may be a limiting
+factor over wifi.</p>
+
+<p>The instructions in this guide will setup your persistent bootable USB to
+automatically configure a wired network connection whenever a network cable is
+detected.  Support for most wifi interfaces will also be installed, but
+automatic connection will not be enabled.  Having automatic wifi connection
+capability is quite simple to setup, but for this bootable Linux USB it won't be
+enabled by default as not every machine it is boot on will even have a wifi
+interface.</p>
+
+<p>Lastly, Linux kind of has a horrible history of working with some wifi
+interfaces.  There is a chance, albeit rare, that you may be the proud owner of
+a wifi networking device not compatible with Linux... yet (until you write the
+driver for it!).  For more information pertaining to Linux wireless interface
+compatibility, see the official <a href="../../external.html?link=https://wireless.wiki.kernel.org/"
+target="_blank">wireless wiki</a>.</p>
+
+<h2 id="bios_uefi">BIOS vs UEFI</h2>
+
+<p>Basically, there are two different systems implemented today that
+motherboards use to communicate between an operating system and their firmware.
+There is the standard (legacy) <a href="../../external.html?link=https://en.wikipedia.org/wiki/BIOS"
+target="_blank">BIOS</a> (basic input/output system), and there is the newer <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/Unified_Extensible_Firmware_Interface"
+target="_blank">UEFI</a> (unified extensible firmware interface).  Although UEFI
+was implemented on some top-end machines in the early 2000s, any computer more
+than ten to fifteen years old is probably only going to be able to boot up in BIOS
+mode.  Newer machines, on the other hand, will often be capable of booting in
+both UEFI mode and BIOS mode.  Many times a preferred boot mode can be selected
+from the BIOS menu on such machines.  Current Apple computers only recognize
+UEFI.</p>
+
+<p>Both BIOS and UEFI require different particular partition schemes in order to
+boot.  If the motherboard is set to boot in UEFI mode only and the inserted boot
+media does not have the correct partition scheme for UEFI, the boot will fail;
+the same goes for an attempted BIOS boot.  This is one place I believe some of
+the USB installation guides out there fail: they often only describe how to
+create a USB boot device that uses only one mode.  It is possible, however, to
+setup a USB drive that will have a partition scheme allowing it to boot in both
+modes and still use the same persistent installation of Linux.  This guide will
+setup such a scheme in the partitioning and formatting sections below.</p>
+
+<p>On most newer machines, you will be presented with the option to boot in
+either BIOS or UEFI mode from your bootable USB.  This means the machine
+recognizes the UEFI boot media, but it does not always mean the machine is
+actually set to boot in UEFI mode, and selecting the UEFI boot option may fail.
+Selecting a mode that the motherboard is not set to boot in will not damage
+anything or touch any of the other drives on the machine, the boot will simply
+fail and one can reboot in the other mode.  The USB stick created with this
+guide has been able to boot on every (about a dozen) desktop and laptop, new and
+old, BIOS and UEFI, machine that I have tried it on.</p>
+
+<h2 id="secure_boot">secure boot</h2>
+
+<p>The new UEFI specification also includes an optional mechanism to protect
+against pre-boot malware.  The <a
+href="../../external.html?link=http://www.rodsbooks.com/efi-bootloaders/secureboot.html"
+target="_blank">secure boot</a> protocol is designed to only allow the booting
+of images signed with a <a
+href="../../external.html?link=https://en.wikipedia.org/wiki/Key_(cryptography)"
+target="_blank">cryptographic key</a> contained in a machine's <a
+href="../../external.html?link=https://en.wikipedia.org/wiki/Non-volatile_random-access_memory"
+target="_blank">NVRAM</a>.  If secure boot is enabled and a boot image lacks a
+cryptographic signature or the signature doesn't correspond to a key listed in
+the computer's NVRAM, the firmware will refuse to execute the boot image.  The
+most common workaround when dealing with secure boot on Linux machines is to
+simply disable the secure boot option in the machine's BIOS menu.</p>
+
+<p>If it is not possible to disable secure boot in a machine's BIOS or you wish
+to use secure boot on your Arch Linux USB, you will need to install a <a
+href="../../external.html?link=https://aur.archlinux.org/packages/shim-signed/" target="_blank">signed
+bootloader</a> and properly <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/Secure_Boot#Set_up_shim"
+target="_blank">set it up</a> after this guide.</p>
+
+<h2 id="localtime_utc">localtime vs UTC</h2>
+
+<p>There are two time standards used by the internal hardware clock of a modern
+computer to store the current time.  Localtime is dependent on the machine's
+current geographical time zone and often takes daylight savings into account,
+while <a href="../../external.html?link=https://en.wikipedia.org/wiki/Coordinated_Universal_Time"
+target="_blank">UTC</a> (coordinated universal time) is the same regardless of
+global location.  The hardware clock stores the current time, in one of these
+two formats, by storing separate values for <i>year, month, day, hour,
+minute</i>, and <i>second</i>.</p>
+
+<p>The hardware clock does not, however, retain any record of what format its
+time values are kept in or if there has been any adjustment made for daylight
+savings.  It's up to the operating system to keep track of these settings.  This
+can pose some issues if multiple operating systems are boot on the same computer
+using localtime as its time format.  For instance, both operating systems might
+adjust the hardware clock time for daylight savings resulting in an extra hour
+of difference.</p>
+
+<p>The obvious solution, here, is to simply use UTC on all operating systems and
+be done with it.  MacOS uses UTC, Linux uses UTC by default, but Windows uses
+localtime by default.  In other words, when booting the Linux USB off of a
+machine primarily used with Windows, the chances are that the hardware clock is
+going to appear to be incorrect.</p>
+
+<p>What this means for the Linux USB is that you may occasionally see some
+time-stamp warning messages when you boot up your USB off different machines.
+We will enable a network time protocol so that the USB Linux system will update
+its operating system clock as soon as an internet connection is established and
+correct these discrepancies.  More importantly, though, the Linux system will
+also update the hardware clock to the correct time in UTC, meaning the next time
+Windows is boot it may encounter some time-stamp errors.  In my experience, this
+hasn't been an issue beyond the infrequent warning message at bootup.</p>
+
+<h2 id="partitioning">partitioning notes</h2>
+
+<p>Another possibly useful option not explicitly shown in this guide is
+partitioning the target USB device to function as both a persistent bootable USB
+and an <a href="../../external.html?link=https://en.wikipedia.org/wiki/NTFS" target="_blank">NTFS</a> or
+<a href="../../external.html?link=https://en.wikipedia.org/wiki/File_Allocation_Table"
+target="_blank">FAT32</a> formatted storage device fully compatible as a
+Windows, Linux, or OSX standard USB jump drive.</p>
+
+<p>A final thing to point out is the lack of a <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/swap" target="_blank">swap</a>
+partition in this installation of Linux.  The reason for this is twofold.
+First, recognizing that flash memory has a finite number of writes before it
+eventually goes bad, the lack of a swap partition may at least decrease some of
+those writes.  Second, realizing that nearly any computer you boot up onthese
+days has at least a few gigabytes of available RAM, the need for a swap
+partition is mostly non-existent.</p>
+
+<h1 id="why">Why Arch Linux?</h1>
+
+<p>There are already several guides to setting up a persistent Linux
+installation on a USB drive out there, including a dedicated <a
+href="../../external.html?link=https://wiki.archlinux.org/" target="_blank">ArchWiki</a> <a
+href="../../external.html?link=https://wiki.archlinux.org/index.php/Installing_Arch_Linux_on_a_USB_key"
+target="_blank">page</a>.  In theory, an installation on a USB key should be no
+different than any other installation, and perhaps some GUI installers out there
+will work just fine.  However I've heard of several failed attempts at getting a
+USB Linux installation working properly when working from said installers or
+guides.  I have a few ideas on why this might be occurring and have attempted to
+correct these scenarios with this process.  Arch Linux serves this purpose well
+due to its ability to easily change  configuration options to the user's
+need.</p>
+
+<h2 id="about">about this guide</h2>
+
+<p>Perhaps the biggest reason for the existence of this entire
+guide is my own curiosity. You may find the nature of an Arch Linux
+installation provides more insight into what is happening behind the scenes
+than any GUI installation tool out there.  Messing around with Linux like this
+can be fun (and frustrating!).  I find learning how my computer works and
+finely tuning its configuration to be rewarding.  With an Arch Linux persistent
+bootable USB I have my own completely custom operating system, application set,
+and user interface with me in my pocket everywhere I go!</p>
+
+<p>Also, I suppose I should say, I am in no way officially
+associated with Linux or the Arch Linux project.  I am simply a curious
+tinkerer who uses the act writing things like this as a learning experience.  I
+have personally followed these steps over a dozen times on multiple computers
+with no problems, but I can't guarantee it will work for you.  I wrote this
+guide to be (hopefully) followable by anyone with a moderate understanding of
+current PCs.  My intention is for this to be a fully self contained guide, yet
+numerous links are provided throughout the text to supporting references and
+additional resources.</p>
+
+</main>
+
+<footer>
+updated: 2024-03-09
+</footer>
+
+</body>
+</html>
