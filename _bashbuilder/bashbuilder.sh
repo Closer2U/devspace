@@ -29,7 +29,7 @@ mv post.html ${TITEL// /_}.html
 mv ${TITEL// /_}.html ../output
 
 
-#tidy post.html > post-tidy.html
+#TODO tidy post.html > post-tidy.html
 
 }
 
@@ -39,9 +39,9 @@ mv ${TITEL// /_}.html ../output
 check_markdown(){
 # Markdown conversion with multiple fallbacks
 if command -v markdown &> /dev/null; then
-    content=$(echo "$temp_content" | markdown)
+    echo "markdown installed"
 elif command -v pandoc &> /dev/null; then
-    content=$(echo "$temp_content" | pandoc -f markdown -t html)
+    echo "pandoc installed"
 else
     echo "Error: Install either 'markdown' or 'pandoc'"
     echo "Debian/Ubuntu: sudo apt install markdown pandoc"
@@ -52,7 +52,7 @@ fi
 
 check_tidy(){
 if command -v tidy &> /dev/null; then
-    content=$(echo "$temp_content" | prettier)
+    echo "tidy installed"
 else
     echo "Error: Prettier for formatting html not installed"
     echo "Debian/Ubuntu: sudo apt install tidy"
