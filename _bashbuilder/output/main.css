@@ -115,13 +115,6 @@ header nav :not(:last-child)::after {
 
 header pre {
     display: table;
-
-    --minFontSize: 6px;
-    --maxFontSize: 0.8vw;
-    --scaler: 0.7vw;
-    font-size: clamp(var(--minFontSize), var(--scaler), var(--maxFontSize));
-    font-weight: bold;
-    margin-top: 1.2vh;
 }
 
 main nav, div.box, div.code {
