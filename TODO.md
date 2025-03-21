@@ -1,6 +1,6 @@
 Frontend
 -----------------------------
-- [ ] fix font size for name-ascii art
+- [x] fix font size for name-ascii art
 - [ ] learn how to insert gists into webpage:
 	- https://codersblock.Com/blog/customizing-github-gists
 - [ ] bashbuilder how to folder /bash-ssg
