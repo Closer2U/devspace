@@ -18,10 +18,30 @@
   <span class="active">The Readme</span>
 </nav>
 <pre class="wide">
-   _          _    _    _                _   _ ___ ___
-  /_\  _ _ __| |_ | |  (_)_ _ _  ___ __ | | | / __| _ )
- / _ \| '_/ _| ' \| |__| | ' \ || \ \ / | |_| \__ \ _ \
-/_/ \_\_| \__|_||_|____|_|_||_\_,_/_\\_\  \___/|___/___/
+
+________/\\\\\\\\\__/\\\\\\_______________________________________________________________/\\\\\\\\\______/\\\________/\\\_        
+ _____/\\\////////__\////\\\_____________________________________________________________/\\\///////\\\___\/\\\_______\/\\\_       
+  ___/\\\/______________\/\\\____________________________________________________________\///______\//\\\__\/\\\_______\/\\\_      
+   __/\\\________________\/\\\________/\\\\\_____/\\\\\\\\\\_____/\\\\\\\\___/\\/\\\\\\\____________/\\\/___\/\\\_______\/\\\_     
+    _\/\\\________________\/\\\______/\\\///\\\__\/\\\//////____/\\\/////\\\_\/\\\/////\\\________/\\\//_____\/\\\_______\/\\\_    
+     _\//\\\_______________\/\\\_____/\\\__\//\\\_\/\\\\\\\\\\__/\\\\\\\\\\\__\/\\\___\///______/\\\//________\/\\\_______\/\\\_   
+      __\///\\\_____________\/\\\____\//\\\__/\\\__\////////\\\_\//\\///////___\/\\\___________/\\\/___________\//\\\______/\\\__  
+       ____\////\\\\\\\\\__/\\\\\\\\\__\///\\\\\/____/\\\\\\\\\\__\//\\\\\\\\\\_\/\\\__________/\\\\\\\\\\\\\\\__\///\\\\\\\\\/___ 
+        _______\/////////__\/////////_____\/////_____\//////////____\//////////__\///__________\///////////////_____\/////////_____
+
+
+</pre>
+
+<!--<pre> Choice C)
+░█████╗░██╗░░░░░░█████╗░░██████╗███████╗██████╗░██████╗░██╗░░░██╗
+██╔══██╗██║░░░░░██╔══██╗██╔════╝██╔════╝██╔══██╗╚════██╗██║░░░██║
+██║░░╚═╝██║░░░░░██║░░██║╚█████╗░█████╗░░██████╔╝░░███╔═╝██║░░░██║
+██║░░██╗██║░░░░░██║░░██║░╚═══██╗██╔══╝░░██╔══██╗██╔══╝░░██║░░░██║
+╚█████╔╝███████╗╚█████╔╝██████╔╝███████╗██║░░██║███████╗╚██████╔╝
+░╚════╝░╚══════╝░╚════╝░╚═════╝░╚══════╝╚═╝░░╚═╝╚══════╝░╚═════╝░
+</pre>
+
+<!-- {{HERO}} -->
 </pre>
 </header>
 
@@ -52,11 +72,112 @@ beyond <div class="code nomargin"><span class="prompt"># </span>markdown</div> (
 🚧 WiP: website for dev stuff (https://closer2u.github.io/devspace)</p>
 
 <p>[!IMPORTANT] Creds
-Original theme found on <a href="https://mags.zone">mags.zone</a>
-Shoutout for this awesome design!</p>
+Original theme found on <a href="https://mags.zone">mags.zone</a></p>
+
+<p>Shoutout for this awesome design!</p>
 </blockquote>
 
-<p>title: My Page Title</p>
+<p><br></p>
+
+<h2>Directory layout</h2>
+
+<pre style="display: inline-block; white-space:pre-wrap">
+```
+your-site/
+├── _bashbuilder/
+│   ├── bashbuilder.sh      ← the builder
+│   ├── markdown-toc.sh     ← TOC helper (called automatically)
+│   ├── template.html       ← your site's HTML shell
+│   └── src/                ← put your markdown here
+│       ├── index.md        → builds to /index.html
+│       └── arch-usb/       → topic folder
+│           ├── intro.md    → builds to /posts/arch-usb/intro.html
+│           └── iso.md      → builds to /posts/arch-usb/iso.html
+├── posts/                  ← generated; do not edit by hand
+├── css/
+│   └── main.css
+└── index.html              ← generated from src/index.md
+```
+</pre>
+
+<p><br> </p>
+
+<h2>Writing pages</h2>
+
+<p>Each <div class="code nomargin"><span class="prompt"># </span>.md</div> file may begin with optional <strong>front matter</strong>:</p>
+
+<p>```markdown</p>
+
+<h1>My Page Title</h1>
+
+<p>Content here...
+```</p>
+
+<ul>
+<li><div class="code nomargin"><span class="prompt"># </span>title</div> — used in <div class="code nomargin"><span class="prompt"># </span>&lt;title&gt;</div>, site nav, and TOC. <br />
+Falls back to the first <div class="code nomargin"><span class="prompt"># </span># h1</div> in the document, then the filename.</li>
+</ul>
+
+<p>Without front matter the file still builds fine.</p>
+
+<h2>Building</h2>
+
+<p>```bash
+cd _bashbuilder</p>
+
+<h1>Build everything</h1>
+
+<p>./bashbuilder.sh</p>
+
+<h1>Build one file</h1>
+
+<p>./bashbuilder.sh src/arch-usb/intro.md
+```</p>
+
+<p>Output is written directly to the correct location — no manual move needed.</p>
+
+<h2>Template placeholders</h2>
+
+<p>| Placeholder        | What it becomes                                |
+|--------------------|------------------------------------------------|
+| <div class="code nomargin"><span class="prompt"># </span>The Readme</div>        | Page title (front matter → h1 → filename)      |
+| <div class="code nomargin"><span class="prompt"># </span>../../css/main.css</div>     | Relative path to <div class="code nomargin"><span class="prompt"># </span>css/main.css</div> (auto)         |
+| <div class="code nomargin"><span class="prompt"># </span>{{SITE_NAV}}</div>     | Site-wide <div class="code nomargin"><span class="prompt"># </span>&lt;nav&gt;</div> with links to all pages      |
+| <div class="code nomargin"><span class="prompt"># </span>{{TOC_NAV}}</div>      | In-page <div class="code nomargin"><span class="prompt"># </span>&lt;nav&gt;</div> with links to headings         |
+| <div class="code nomargin"><span class="prompt"># </span>{{BODY}}</div>         | Converted markdown body                        |
+| <div class="code nomargin"><span class="prompt"># </span>2026-05-21</div> | Last-modified date (git log → mtime → today)   |</p>
+
+<h2>Dependencies</h2>
+
+<p>| Tool       | Purpose                 | Install                          |
+|------------|-------------------------|----------------------------------|
+| <div class="code nomargin"><span class="prompt"># </span>markdown</div> | Markdown → HTML         | <div class="code nomargin"><span class="prompt"># </span>sudo apt install markdown</div>      |
+| <div class="code nomargin"><span class="prompt"># </span>pandoc</div>   | Fallback converter      | <div class="code nomargin"><span class="prompt"># </span>sudo apt install pandoc</div>        |
+| <div class="code nomargin"><span class="prompt"># </span>python3</div>  | Relative path calc      | Usually pre-installed            |
+| <div class="code nomargin"><span class="prompt"># </span>git</div>      | Accurate modified dates | Optional; mtime used as fallback |</p>
+
+<h2>Inter-page links</h2>
+
+<p>Links between pages in the same topic folder work as plain relative refs:</p>
+
+<p><div class="code nomargin"><span class="prompt"># </span>markdown
+See the [Live ISO](iso.html) guide.
+</div></p>
+
+<p>Links from one topic to another:</p>
+
+<p><div class="code nomargin"><span class="prompt"># </span>markdown
+See [arch-usb intro](../arch-usb/intro.html).
+</div></p>
+
+<p>Links to the root from a post:</p>
+
+<p><div class="code nomargin"><span class="prompt"># </span>markdown
+[Home](../../index.html)
+</div></p>
+
+<p>The CSS path is computed automatically per page, so <div class="code nomargin"><span class="prompt"># </span>../../css/main.css</div> in the
+template always resolves correctly regardless of nesting depth.</p>
 
     <footer>
         <p class="updated">Updated: 2026-05-21</p>

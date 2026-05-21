@@ -1,3 +1,7 @@
+---
+title: home
+topic: bashbuilder
+---
 # BashSSG
 
 `bashbuilder.sh` - A simple bash static site generator. No config files, no dependencies

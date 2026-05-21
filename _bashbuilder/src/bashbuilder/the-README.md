@@ -1,3 +1,8 @@
+---
+title: The Readme
+topic: bashbuilder
+---
+
 # BashSSG
 
 `bashbuilder.sh` - A simple bash static site generator. No config files, no dependencies
@@ -8,12 +13,15 @@ beyond `markdown` (or `pandoc`) and `python3`.
 
 > [!IMPORTANT] Creds
 > Original theme found on [mags.zone](https://mags.zone)
+
+
 > Shoutout for this awesome design!
 
----
+<br>
 
 ## Directory layout
 
+<pre style="display: inline-block; white-space:pre-wrap">
 ```
 your-site/
 ├── _bashbuilder/
@@ -30,6 +38,9 @@ your-site/
 │   └── main.css
 └── index.html              ← generated from src/index.md
 ```
+</pre>
+
+<br> 
 
 ## Writing pages
 

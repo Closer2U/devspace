@@ -90,7 +90,7 @@ footer {
 /*/* nav sections, boxes ::*/
 header nav {
     float: right;
-    display: table;
+    display: flex;
     font-weight: bold;
     text-align: right;
 }
