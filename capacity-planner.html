@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Capacity Planner</title>
+<style>
+  :root{--ink:#18222f;--muted:#687586;--line:#dfe5eb;--bg:#f4f6f8;--card:#fff;--green:#138a5b;--green-bg:#e8f6ef;--orange:#c76a09;--orange-bg:#fff2df;--red:#c83a3a;--red-bg:#fdeaea;--blue:#2767d8;--blue-bg:#edf3ff;--shadow:0 8px 24px rgba(24,34,47,.07)}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+  button,input,select{font:inherit} button{cursor:pointer}.app{min-height:100vh}.topbar{background:#132238;color:white;padding:18px 28px;display:flex;align-items:center;justify-content:space-between;gap:18px}.brand{display:flex;gap:12px;align-items:center}.brandmark{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:#3b7cf0;font-weight:800}.brand h1{font-size:17px;margin:0}.brand p{font-size:12px;color:#aebed1;margin:2px 0 0}.top-actions{display:flex;gap:8px;align-items:center}.month-wrap{background:#25374f;padding:7px 10px;border-radius:9px;display:flex;align-items:center;gap:8px}.month-wrap label{color:#bdcad8;font-size:12px}.month-wrap input{color:#fff;background:transparent;border:0;color-scheme:dark;outline:0}.icon-btn{border:1px solid #40516a;color:#eaf0f7;background:transparent;border-radius:9px;padding:9px 12px}.shell{max-width:1440px;margin:auto;padding:24px 28px 44px}.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:18px}.page-head h2{font-size:25px;margin:0 0 4px}.page-head p{margin:0;color:var(--muted)}.primary{border:0;background:var(--blue);color:white;padding:11px 16px;border-radius:9px;font-weight:700;box-shadow:0 3px 8px rgba(39,103,216,.2)}.secondary{border:1px solid var(--line);background:white;color:var(--ink);padding:9px 13px;border-radius:8px;font-weight:650}.danger-text{color:var(--red)!important}.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}.kpi{background:white;border:1px solid var(--line);border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(24,34,47,.03)}.kpi-label{font-size:12px;color:var(--muted);font-weight:650}.kpi strong{display:block;font-size:24px;margin-top:4px}.kpi small{color:var(--muted)}.section-head{display:flex;align-items:center;justify-content:space-between;margin:20px 0 10px}.section-head h3{font-size:16px;margin:0}.legend{display:flex;gap:13px;color:var(--muted);font-size:12px}.legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;background:currentColor}.departments{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.dept{background:white;border:1px solid var(--line);border-top:4px solid var(--status);border-radius:13px;box-shadow:var(--shadow);overflow:hidden}.dept-top{display:flex;justify-content:space-between;gap:12px;padding:16px 17px 12px}.dept h4{font-size:16px;margin:0 0 4px}.dept-sub{color:var(--muted);font-size:12px}.badge{display:inline-flex;align-items:center;white-space:nowrap;align-self:flex-start;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:750;color:var(--status);background:var(--status-bg)}.dept-metrics{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.metric{padding:11px 14px}.metric+.metric{border-left:1px solid var(--line)}.metric label{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.04em}.metric strong{font-size:15px}.week-list{padding:12px 16px}.week-row{display:grid;grid-template-columns:76px 1fr 68px;gap:9px;align-items:center;margin:9px 0}.week-label{font-size:11px;color:var(--muted)}.track{height:8px;background:#edf0f3;border-radius:99px;position:relative;overflow:hidden}.fill{height:100%;border-radius:99px;background:var(--bar);width:min(var(--pct),100%)}.overflow-mark{position:absolute;right:0;top:0;height:100%;width:4px;background:var(--red);display:none}.over .overflow-mark{display:block}.week-value{text-align:right;font-size:11px;font-variant-numeric:tabular-nums}.dept-projects{padding:11px 16px 13px;border-top:1px solid var(--line)}.dept-projects-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;color:var(--muted);font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.04em}.dept-project-list{display:flex;flex-direction:column;gap:6px}.dept-project{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;align-items:center;width:100%;border:1px solid #e3e8ee;background:#fafbfc;border-radius:8px;padding:7px 9px;text-align:left;color:var(--ink)}.dept-project:hover{border-color:#b7c8e5;background:#f4f7fc}.dept-project-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;font-weight:700}.dept-project-meta{font-size:10px;color:var(--muted);white-space:nowrap}.dept-project-empty{font-size:11px;color:var(--muted);padding:2px 0}.dept-foot{padding:11px 16px;background:#fafbfc;display:flex;justify-content:space-between;align-items:center}.link-btn{border:0;background:none;color:var(--blue);font-weight:700;padding:3px}.panel{background:white;border:1px solid var(--line);border-radius:13px;box-shadow:var(--shadow);overflow:hidden}.toolbar{padding:13px 15px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:12px}.filters{display:flex;gap:8px}.filters select{border:1px solid var(--line);background:white;border-radius:8px;padding:8px 10px;color:var(--ink)}table{border-collapse:collapse;width:100%}th{text-align:left;color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.04em;background:#fafbfc;padding:10px 15px;border-bottom:1px solid var(--line)}td{padding:12px 15px;border-bottom:1px solid #edf0f3;vertical-align:middle}tr:last-child td{border-bottom:0}.project-name{font-weight:700}.subline{font-size:11px;color:var(--muted);margin-top:2px}.type-pill{font-size:10px;font-weight:750;padding:3px 6px;border-radius:5px;background:var(--blue-bg);color:var(--blue)}.type-pill.committed{background:#eef1f4;color:#596575}.row-actions{display:flex;justify-content:flex-end}.empty{text-align:center;color:var(--muted);padding:28px}.status-text{font-weight:700;color:var(--status)}
+  dialog{border:0;border-radius:15px;padding:0;box-shadow:0 24px 80px rgba(17,29,45,.3);width:min(560px,calc(100% - 28px));max-height:90vh}dialog::backdrop{background:rgba(19,34,56,.55)}.dialog-head{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 22px 15px;border-bottom:1px solid var(--line)}.dialog-head h3{font-size:19px;margin:0}.dialog-head p{color:var(--muted);font-size:12px;margin:3px 0 0}.close{border:0;background:#f1f3f5;border-radius:8px;width:32px;height:32px;font-size:18px}.dialog-body{padding:18px 22px;overflow:auto;max-height:65vh}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:700}.field input,.field select{width:100%;border:1px solid #cfd7df;border-radius:8px;padding:10px 11px;background:white;outline:none}.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(39,103,216,.1)}.help{font-size:11px;color:var(--muted)}.impact{grid-column:1/-1;padding:11px 12px;border-radius:9px;background:var(--green-bg);color:var(--green);font-size:12px;font-weight:650}.impact.orange{background:var(--orange-bg);color:var(--orange)}.impact.red{background:var(--red-bg);color:var(--red)}.dialog-foot{padding:14px 22px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:9px}.team-table-wrap{overflow-x:auto;margin-bottom:12px}.team-capacity-table{min-width:520px}.team-capacity-table th,.team-capacity-table td{padding:8px 6px;text-align:center}.team-capacity-table th:first-child,.team-capacity-table td:first-child{text-align:left}.team-capacity-table input[type="text"],.team-capacity-table input[type="number"]{border:1px solid var(--line);border-radius:7px;padding:8px;width:100%}.team-capacity-table .name-input{min-width:135px}.team-capacity-table .hours-input{width:72px}.week-check{appearance:none;width:28px;height:28px;border:1px solid #cfd7df;border-radius:7px;background:#fff;display:inline-grid;place-items:center;cursor:pointer;vertical-align:middle}.week-check:checked{background:var(--red-bg);border-color:#e6a7a7}.week-check:checked::after{content:'×';color:var(--red);font-size:20px;font-weight:800;line-height:1}.team-capacity-table .remove{border:0;background:none;color:var(--red);font-size:18px}.week-head{white-space:nowrap}.week-head small{display:block;font-size:9px;font-weight:500;text-transform:none}.note{padding:11px 13px;border-radius:9px;background:#f3f6fa;color:#596575;font-size:11px;margin-bottom:14px}.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;background:#18222f;color:white;padding:10px 14px;border-radius:8px;transition:.2s;pointer-events:none;z-index:20}.toast.show{opacity:1;transform:translate(-50%,0)}
+  #projectDialog{width:min(920px,calc(100% - 28px))}.assignment-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.assignment-list{display:flex;flex-direction:column;gap:8px}.assignment-row{display:grid;grid-template-columns:125px minmax(145px,1fr) 132px 80px 76px 32px;gap:7px;align-items:end;padding:9px;background:#f7f9fb;border:1px solid var(--line);border-radius:9px}.assignment-row label{display:block;font-size:9px;color:var(--muted);text-transform:uppercase;margin:0 0 3px}.assignment-row input,.assignment-row select{width:100%;border:1px solid #cfd7df;border-radius:7px;padding:8px;background:#fff}.remove-assignment{border:0;background:none;color:var(--red);font-size:20px;height:36px}.project-swatch{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}.people-summary{max-width:310px}.timeline-heading{align-items:flex-end;margin-top:24px}.timeline-heading>div:first-child{display:flex;flex-direction:column}.calendar-key{width:12px;height:12px;border-radius:3px}.weekend-key{background:#edf0f3}.conflict-key{background:repeating-linear-gradient(135deg,#c83a3a 0 4px,#fff 4px 8px);border:1px solid #c83a3a}.employee-calendar{position:relative}.calendar-scroll{overflow:auto;max-height:560px}.calendar-grid{display:grid;width:max-content;min-width:100%;--cell:30px;grid-template-columns:190px repeat(var(--days),var(--cell));font-size:10px}.cal-corner,.cal-month,.cal-day,.cal-name,.cal-cell{border-right:1px solid #e4e8ed;border-bottom:1px solid #e4e8ed;min-height:30px}.cal-corner{position:sticky;left:0;top:0;z-index:6;background:#f8fafc;padding:10px;font-weight:750}.cal-month{position:sticky;top:0;z-index:4;background:#edf3ff;color:#31598e;padding:7px 9px;font-weight:800;text-align:left}.cal-day{position:sticky;top:30px;z-index:4;background:#f8fafc;text-align:center;padding:4px 1px;line-height:1.1}.cal-day small{display:block;color:var(--muted);font-size:8px}.cal-name{position:sticky;left:0;z-index:3;background:#fff;padding:7px 9px;min-width:190px}.cal-name strong{display:block;font-size:11px}.cal-name span{color:var(--muted);font-size:9px}.cal-cell{display:grid;place-items:center;font-size:10px;font-weight:850;color:#fff;position:relative}.cal-cell.weekend{background:#f0f2f4!important;color:#aab2bc}.cal-cell.unavailable{background:var(--red-bg);color:var(--red)}.cal-cell.today{box-shadow:inset 0 0 0 2px #172a46}.cal-cell.conflict{background:repeating-linear-gradient(135deg,#c83a3a 0 5px,#9c2929 5px 10px)!important}.cal-cell[title]{cursor:help}
+  @media(max-width:1000px){.departments{grid-template-columns:1fr}.kpis{grid-template-columns:1fr 1fr}.dept{display:grid;grid-template-columns:240px 1fr}.dept-top{grid-column:1}.dept-metrics{grid-column:1;grid-template-columns:1fr}.metric+.metric{border-left:0;border-top:1px solid var(--line)}.week-list{grid-column:2;grid-row:1/3}.dept-projects,.dept-foot{grid-column:1/-1}}
+  @media(max-width:700px){.topbar{padding:14px 16px;align-items:flex-start}.brand p{display:none}.top-actions{flex-wrap:wrap;justify-content:flex-end}.shell{padding:18px 14px 36px}.page-head{align-items:flex-start}.page-head p{font-size:12px}.kpis{grid-template-columns:1fr 1fr}.departments{grid-template-columns:1fr}.dept{display:block}.week-list{display:block}.dept-metrics{grid-template-columns:repeat(3,1fr)}.metric+.metric{border-left:1px solid var(--line);border-top:0}.table-scroll{overflow-x:auto}table{min-width:760px}.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.assignment-row{grid-template-columns:1fr 1fr}.assignment-row .remove-assignment{grid-column:2;justify-self:end}.legend{display:none}.calendar-grid{--cell:28px;grid-template-columns:150px repeat(var(--days),var(--cell))}.cal-name{min-width:150px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="brandmark">CP</div><div><h1>Capacity Planner</h1><p>Department demand & availability</p></div></div>
+    <div class="top-actions">
+      <div class="month-wrap"><label for="monthPicker">Planning month</label><input id="monthPicker" type="month" /></div>
+      <button class="icon-btn" id="importBtn" title="Import a capacity plan">Import</button><input id="importFile" type="file" accept="application/json,.json" hidden /><button class="icon-btn" id="exportBtn" title="Export your data">Export</button>
+      <button class="icon-btn" id="resetBtn" title="Restore the sample scenario">Reset</button>
+    </div>
+  </header>
+  <main class="shell">
+    <div class="page-head"><div><h2>Monthly capacity</h2><p id="periodText">Review committed and proposed work by week.</p></div><button class="primary" id="addProjectBtn">＋ Add project</button></div>
+    <section class="kpis" id="kpis"></section>
+    <div class="section-head"><h3>Departments</h3><div class="legend"><span style="color:var(--green)"><i class="dot"></i>Available</span><span style="color:var(--orange)"><i class="dot"></i>90–100% used</span><span style="color:var(--red)"><i class="dot"></i>Over capacity</span></div></div>
+    <section class="departments" id="departments"></section>
+    <div class="section-head"><h3>Work portfolio</h3><span class="help">Proposed work is included in capacity calculations</span></div>
+    <section class="panel">
+      <div class="toolbar"><div class="filters"><select id="deptFilter"><option value="all">All departments</option></select><select id="typeFilter"><option value="all">All work</option><option value="committed">Committed</option><option value="proposed">Proposed</option></select></div><span id="projectCount" class="help"></span></div>
+      <div class="table-scroll"><table><thead><tr><th>Global project</th><th>Assigned people</th><th>First start</th><th>Total effort</th><th>Capacity impact</th><th></th></tr></thead><tbody id="projectRows"></tbody></table></div>
+    </section>
+    <div class="section-head timeline-heading"><div><h3>Employee schedule · three-month view</h3><span class="help" id="timelineRange"></span></div><div class="legend"><span><i class="calendar-key weekend-key"></i>Weekend</span><span><i class="calendar-key conflict-key"></i>Conflict</span></div></div>
+    <section class="panel employee-calendar"><div class="calendar-scroll" id="employeeCalendar"></div></section>
+  </main>
+</div>
+
+<dialog id="projectDialog">
+  <form id="projectForm">
+    <div class="dialog-head"><div><h3 id="projectDialogTitle">Add project</h3><p>Preview the effect before adding work to the plan.</p></div><button type="button" class="close" data-close="projectDialog">×</button></div>
+    <div class="dialog-body"><div class="form-grid">
+      <div class="field full"><label for="projectName">Global project name</label><input id="projectName" required placeholder="e.g. This big Project 1" /></div>
+      <div class="field"><label for="projectType">Planning status</label><select id="projectType"><option value="proposed">Proposed / what-if</option><option value="committed">Committed</option></select></div>
+      <div class="field"><label for="projectColor">Calendar color</label><input id="projectColor" type="color" value="#4f7ee8" /></div>
+      <div class="field full"><div class="assignment-title"><label>People assigned across departments</label><button type="button" class="secondary" id="addAssignmentBtn">＋ Add person</button></div><div id="assignmentRows" class="assignment-list"></div><span class="help">Each assignment has its own employee, start date, effort, and daily pace. “+” marks a project lead—use a lead as the proposed assignee when delegation is still open. The hours/day pace controls how weekly capacity is shared between projects. DFIR assignments are exclusive and cannot overlap other project work.</span></div>
+      <div class="impact" id="impactPreview">Add at least one person to preview capacity.</div>
+    </div></div>
+    <div class="dialog-foot"><button type="button" class="secondary danger-text" id="deleteProjectBtn" style="margin-right:auto;display:none">Delete</button><button type="button" class="secondary" data-close="projectDialog">Cancel</button><button class="primary" value="save">Save project</button></div>
+  </form>
+</dialog>
+
+<dialog id="teamDialog">
+  <form id="teamForm">
+    <div class="dialog-head"><div><h3 id="teamTitle">Manage team</h3><p>Weekly hours are prorated across the working days in this month.</p></div><button type="button" class="close" data-close="teamDialog">×</button></div>
+    <div class="dialog-body"><div class="note">Mark an employee unavailable separately for each week. Capacity is prorated over Monday–Friday; public holidays are not deducted.</div><div id="teamRows" class="team-table-wrap"></div><button type="button" class="secondary" id="addPersonBtn">＋ Add person</button></div>
+    <div class="dialog-foot"><button type="button" class="secondary" data-close="teamDialog">Cancel</button><button class="primary" value="save">Save team</button></div>
+  </form>
+</dialog>
+<div class="toast" id="toast"></div>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const uid = () => Math.random().toString(36).slice(2,9);
+  const STORE = 'capacityPlanner.v2';
+  const COLORS = ['#4f7ee8','#8b5cf6','#e67e22','#13a36f','#e04f5f','#168aad','#d19a00','#7b61a8'];
+  const fmt = n => `${Math.round((+n||0)*10)/10}h`;
+  const safe = s => String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const parseDate = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d,12); };
+  const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  const mondayKey = date => { const d=new Date(date), day=d.getDay()||7; d.setDate(d.getDate()-day+1); return iso(d); };
+
+  function defaults(){
+    const departments=[
+      {id:'a',name:'Pentest Web',code:'W',people:[{id:'mr',name:'M.R.',lead:true,hours:40,unavailableWeeks:[]},{id:'ej',name:'E.J.',lead:false,hours:30,unavailableWeeks:[]},{id:'nw',name:'N.W.',lead:false,hours:20,unavailableWeeks:[]}]},
+      {id:'b',name:'Pentest Netzwerk Aussen',code:'A',people:[{id:'jp',name:'J.P.',lead:true,hours:40,unavailableWeeks:[]},{id:'fg',name:'F.G.',lead:true,hours:30,unavailableWeeks:[]},{id:'ff',name:'F.F.',lead:false,hours:20,unavailableWeeks:['2026-06-29','2026-07-06','2026-07-13','2026-07-20','2026-07-27']},{id:'sw',name:'S.W.',lead:false,hours:40,unavailableWeeks:[]}]},
+      {id:'c',name:'Pentest Netzwerk Innen',code:'I',people:[{id:'jp',name:'J.P.',lead:true,hours:40,unavailableWeeks:[]},{id:'fg',name:'F.G.',lead:true,hours:30,unavailableWeeks:[]},{id:'ff',name:'F.F.',lead:false,hours:20,unavailableWeeks:['2026-06-29','2026-07-06','2026-07-13','2026-07-20','2026-07-27']},{id:'sw',name:'S.W.',lead:false,hours:40,unavailableWeeks:[]},{id:'ak',name:'A.K.',lead:false,hours:30,unavailableWeeks:[]}]},
+      {id:'d',name:'Social Engineering',code:'M',people:[{id:'acs',name:'A-C.S.',lead:true,hours:40,unavailableWeeks:[]},{id:'ku',name:'K.U.',lead:false,hours:30,unavailableWeeks:[]},{id:'tm',name:'T.M.',lead:false,hours:20,unavailableWeeks:[]},{id:'ej',name:'E.J.',lead:false,hours:30,unavailableWeeks:[]}]},
+      {id:'e',name:'DFIR',code:'F',people:[{id:'e1',name:'Employee E1',hours:40,unavailableWeeks:[]},{id:'e2',name:'Employee E2',hours:30,unavailableWeeks:[]},{id:'e3',name:'Employee E3',hours:20,unavailableWeeks:[]}]}
+    ];
+    return {month:'2026-07',departments,projects:[
+      {id:uid(),name:'This big Project 1',type:'proposed',color:COLORS[0],assignments:[
+        {id:uid(),dept:'a',personId:'mr',start:'2026-07-06',hours:40,pace:8},
+        {id:uid(),dept:'b',personId:'jp',start:'2026-07-06',hours:80,pace:8},
+        {id:uid(),dept:'c',personId:'sw',start:'2026-07-13',hours:40,pace:8}
+      ]},
+      {id:uid(),name:'Existing support commitment',type:'committed',color:COLORS[2],assignments:[{id:uid(),dept:'b',personId:'fg',start:'2026-07-06',hours:60,pace:6}]}
+    ]};
+  }
+
+  let state; try{ state=JSON.parse(localStorage.getItem(STORE)) || JSON.parse(localStorage.getItem('capacityPlanner.v1')) || defaults(); }catch(e){ state=defaults(); }
+  let editingProject=null, editingDept=null;
+  const DEPARTMENT_CONFIG=[
+    {id:'a',name:'Pentest Web',code:'W'},
+    {id:'b',name:'Pentest Netzwerk Aussen',code:'A'},
+    {id:'c',name:'Pentest Netzwerk Innen',code:'I'},
+    {id:'d',name:'Social Engineering',code:'M'},
+    {id:'e',name:'DFIR',code:'F'}
+  ];
+  DEPARTMENT_CONFIG.forEach(cfg=>{
+    let dept=state.departments.find(d=>d.id===cfg.id);
+    if(dept){dept.name=cfg.name;dept.code=cfg.code}
+    else state.departments.push({id:cfg.id,name:cfg.name,code:cfg.code,people:[1,2,3].map((n,i)=>({id:`${cfg.id}${n}`,name:`Employee ${cfg.id.toUpperCase()}${n}`,hours:[40,30,20][i],unavailableWeeks:[]}))});
+  });
+
+  function weeksForMonth(month){
+    const [y,m]=month.split('-').map(Number), first=new Date(y,m-1,1,12), last=new Date(y,m,0,12), arr=[]; let d=new Date(first), index=0;
+    while(d<=last){
+      const monday=new Date(d), day=monday.getDay()||7; monday.setDate(monday.getDate()-day+1);
+      const sunday=new Date(monday); sunday.setDate(sunday.getDate()+6);
+      const from=new Date(Math.max(+monday,+first)), to=new Date(Math.min(+sunday,+last));
+      let weekdays=0,x=new Date(from); while(x<=to){if(x.getDay()>0&&x.getDay()<6)weekdays++;x.setDate(x.getDate()+1)}
+      arr.push({index:index++,from,to,key:iso(monday),weekdays}); d=new Date(sunday);d.setDate(d.getDate()+1);
+    } return arr;
+  }
+  const weeks = () => weeksForMonth(state.month);
+
+  // Upgrade earlier data and establish shared employee identities across departments.
+  state.departments.forEach(d=>d.people.forEach(p=>{
+    if(!Array.isArray(p.unavailableWeeks)) p.unavailableWeeks=p.absent?weeks().map(w=>w.key):[];
+    delete p.absent;
+  }));
+  state.projects.forEach((p,i)=>{
+    if(!Array.isArray(p.assignments)){
+      const dept=state.departments.find(d=>d.id===p.dept)||state.departments[0];
+      p.assignments=[{id:uid(),dept:dept.id,personId:dept.people[0]?.id||'',start:p.start,hours:+p.hours||40,pace:+p.pace||8}];
+      delete p.dept;delete p.start;delete p.hours;delete p.pace;
+    }
+    p.color=p.color||COLORS[i%COLORS.length];
+  });
+  const MEMBER_CONFIG={
+    a:[['mr','M.R.',true,40],['ej','E.J.',false,30],['nw','N.W.',false,20]],
+    b:[['jp','J.P.',true,40],['fg','F.G.',true,30],['ff','F.F.',false,20],['sw','S.W.',false,40]],
+    c:[['jp','J.P.',true,40],['fg','F.G.',true,30],['ff','F.F.',false,20],['sw','S.W.',false,40],['ak','A.K.',false,30]],
+    d:[['acs','A-C.S.',true,40],['ku','K.U.',false,30],['tm','T.M.',false,20],['ej','E.J.',false,30]]
+  };
+  const OLD_IDS={a:{a1:'mr',a2:'ej',a3:'nw'},b:{b1:'jp',b2:'fg',b3:'ff'},c:{c1:'jp',c2:'fg',c3:'ff'},d:{d1:'acs',d2:'ku',d3:'tm'}};
+  state.projects.forEach(p=>p.assignments.forEach(a=>{a.personId=OLD_IDS[a.dept]?.[a.personId]||a.personId}));
+  const allOldPeople=state.departments.flatMap(d=>d.people.map(p=>({...p,sourceDept:d.id,mappedId:OLD_IDS[d.id]?.[p.id]||p.id})));
+  Object.entries(MEMBER_CONFIG).forEach(([deptId,members])=>{
+    const dept=state.departments.find(d=>d.id===deptId);
+    dept.people=members.map(([id,name,lead,hours])=>{
+      const sources=allOldPeople.filter(p=>p.mappedId===id),existing=sources.find(p=>p.id===id),unavailableWeeks=[...new Set(sources.flatMap(p=>p.unavailableWeeks||[]))];
+      return {id,name,lead,hours:existing?.hours??sources[0]?.hours??hours,unavailableWeeks};
+    });
+  });
+
+  const save = () => { try{localStorage.setItem(STORE,JSON.stringify(state));return true}catch(e){return false} };
+  function monthBounds(){const [y,m]=state.month.split('-').map(Number);return [new Date(y,m-1,1,12),new Date(y,m,0,12)]}
+  function person(deptId,personId){return state.departments.find(d=>d.id===deptId)?.people.find(p=>p.id===personId)}
+  function globalPerson(personId){return state.departments.flatMap(d=>d.people).find(p=>p.id===personId)}
+  function personLabel(p){return p?(p.name+(p.lead?' +':'')):'Unassigned'}
+  function deptCode(id){const d=state.departments.find(x=>x.id===id);return (d?.code||id||'?').toUpperCase()}
+
+  function allocationByDate(a){
+    const out={}, start=a.start?parseDate(a.start):new Date(), pace=Math.max(0,+a.pace||0); let remain=Math.max(0,+a.hours||0),d=new Date(start),guard=0;
+    while(remain>0&&guard++<1500){if(d.getDay()>0&&d.getDay()<6){const used=Math.min(pace||8,remain);out[iso(d)]=(out[iso(d)]||0)+used;remain-=used}d.setDate(d.getDate()+1)}
+    return out;
+  }
+  function allocation(a,ws=weeks()){
+    const out=Object.fromEntries(ws.map(w=>[w.key,0])),byDate=allocationByDate(a);
+    Object.entries(byDate).forEach(([date,h])=>{const d=parseDate(date),w=ws.find(w=>d>=w.from&&d<=w.to);if(w)out[w.key]+=h});return out;
+  }
+  function dfirConflicts(candidate){
+    const projects=state.projects.filter(p=>p.id!==editingProject).concat(candidate?[candidate]:[]),schedule=new Map();
+    projects.forEach(project=>project.assignments.forEach(a=>Object.keys(allocationByDate(a)).forEach(date=>{
+      const key=`${a.personId}|${date}`;if(!schedule.has(key))schedule.set(key,[]);schedule.get(key).push({project,a,date});
+    })));
+    return [...schedule.values()].filter(items=>items.length>1&&items.some(item=>item.a.dept==='e'));
+  }
+  function personCapacityConflicts(candidate){
+    const projects=state.projects.filter(p=>p.id!==editingProject).concat(candidate?[candidate]:[]),loads=new Map(),candidateKeys=new Set();
+    candidate?.assignments.forEach(a=>Object.keys(allocationByDate(a)).forEach(date=>candidateKeys.add(`${a.personId}|${mondayKey(parseDate(date))}`)));
+    projects.forEach(project=>project.assignments.forEach(a=>Object.entries(allocationByDate(a)).forEach(([date,h])=>{
+      const key=`${a.personId}|${mondayKey(parseDate(date))}`;loads.set(key,(loads.get(key)||0)+h);
+    })));
+    return [...loads.entries()].filter(([key])=>!candidate||candidateKeys.has(key)).map(([key,load])=>{const [personId,week]=key.split('|'),p=globalPerson(personId),capacity=p?.unavailableWeeks.includes(week)?0:(+p?.hours||0);return {personId,week,load,capacity,p}}).filter(x=>x.load>x.capacity+.001);
+  }
+
+  function model(extra=null,excludeId=null){
+    const ws=weeks(), projects=state.projects.filter(p=>p.id!==excludeId).concat(extra?[extra]:[]);
+    return state.departments.map(dept=>{
+      const baseWeekly=dept.people.reduce((s,p)=>s+(+p.hours||0),0);
+      const rows=ws.map(w=>{
+        const availableWeekly=dept.people.filter(p=>!p.unavailableWeeks.includes(w.key)).reduce((s,p)=>s+(+p.hours||0),0);
+        const externalLoad=dept.people.reduce((sum,member)=>sum+projects.reduce((ps,project)=>ps+project.assignments.filter(a=>a.personId===member.id&&a.dept!==dept.id).reduce((as,a)=>as+(allocation(a,ws)[w.key]||0),0),0),0);
+        const capacity=Math.max(0,availableWeekly/5*w.weekdays-externalLoad);
+        const load=projects.reduce((sum,p)=>sum+p.assignments.filter(a=>a.dept===dept.id).reduce((x,a)=>x+(allocation(a,ws)[w.key]||0),0),0);
+        const pct=capacity?load/capacity*100:(load?999:0),status=pct>100.001?'red':pct>=90?'orange':'green';
+        return {...w,availableWeekly,capacity,load,pct,status};
+      });
+      const cap=rows.reduce((s,r)=>s+r.capacity,0),load=rows.reduce((s,r)=>s+r.load,0),worst=rows.some(r=>r.status==='red')?'red':rows.some(r=>r.status==='orange')?'orange':'green';
+      return {...dept,baseWeekly,rows,cap,load,free:cap-load,worst};
+    });
+  }
+  const color=s=>s==='red'?'var(--red)':s==='orange'?'var(--orange)':'var(--green)';
+  const bg=s=>s==='red'?'var(--red-bg)':s==='orange'?'var(--orange-bg)':'var(--green-bg)';
+
+  function render(){
+    $('#monthPicker').value=state.month;const [first]=monthBounds();$('#periodText').textContent=first.toLocaleDateString(undefined,{month:'long',year:'numeric'})+' · Monday–Friday planning view';
+    const m=model(),uniquePeople=[...new Map(state.departments.flatMap(d=>d.people).map(p=>[p.id,p])).values()],totalCap=weeks().reduce((sum,w)=>sum+uniquePeople.filter(p=>!p.unavailableWeeks.includes(w.key)).reduce((s,p)=>s+p.hours/5*w.weekdays,0),0),totalLoad=m.reduce((s,d)=>s+d.load,0),free=totalCap-totalLoad,risks=m.reduce((s,d)=>s+d.rows.filter(r=>r.status!=='green').length,0);
+    $('#kpis').innerHTML=`<article class="kpi"><span class="kpi-label">Available capacity</span><strong>${fmt(totalCap)}</strong><small>After weekly absence</small></article><article class="kpi"><span class="kpi-label">Planned demand</span><strong>${fmt(totalLoad)}</strong><small>All global project assignments</small></article><article class="kpi"><span class="kpi-label">Monthly headroom</span><strong style="color:${free<0?'var(--red)':'var(--green)'}">${fmt(free)}</strong><small>${totalCap?Math.round(totalLoad/totalCap*100):0}% utilized overall</small></article><article class="kpi"><span class="kpi-label">Weeks needing attention</span><strong style="color:${risks?'var(--orange)':'var(--green)'}">${risks}</strong><small>Department-weeks at ≥90%</small></article>`;
+    $('#departments').innerHTML=m.map(d=>{
+      const label=d.worst==='red'?'Over capacity':d.worst==='orange'?'At capacity':'Capacity available',issue=d.rows.filter(r=>r.status!=='green').length;
+      const deptProjects=state.projects.filter(p=>p.assignments.some(a=>a.dept===d.id&&Object.values(allocation(a)).some(h=>h>0)));
+      const unavailablePeople=d.people.filter(p=>p.unavailableWeeks.some(k=>d.rows.some(r=>r.key===k))).length;
+      const projectList=deptProjects.length?deptProjects.map(p=>{const hours=p.assignments.filter(a=>a.dept===d.id).reduce((s,a)=>s+Object.values(allocation(a)).reduce((x,h)=>x+h,0),0);const names=p.assignments.filter(a=>a.dept===d.id).map(a=>personLabel(person(a.dept,a.personId))).join(', ');return `<button class="dept-project edit-project" data-id="${p.id}" title="${safe(names)}"><span class="dept-project-name"><i class="project-swatch" style="background:${p.color}"></i>${safe(p.name)}</span><span class="dept-project-meta">${fmt(hours)} · ${safe(names)}</span></button>`}).join(''):'<div class="dept-project-empty">No project assignments in this month.</div>';
+      return `<article class="dept" style="--status:${color(d.worst)};--status-bg:${bg(d.worst)}"><div class="dept-top"><div><h4>${safe(d.name)}</h4><div class="dept-sub">${d.people.length} people · ${unavailablePeople} with weekly absence${d.id==='e'?' · exclusive scheduling':''}</div></div><span class="badge">● ${label}</span></div><div class="dept-metrics"><div class="metric"><label>Normal week</label><strong>${fmt(d.baseWeekly)}</strong></div><div class="metric"><label>Month planned</label><strong>${fmt(d.load)}</strong></div><div class="metric"><label>Month free</label><strong>${fmt(d.free)}</strong></div></div><div class="week-list">${d.rows.map(r=>`<div class="week-row ${r.status==='red'?'over':''}"><span class="week-label">${r.from.toLocaleDateString(undefined,{day:'2-digit',month:'short'})}–${r.to.toLocaleDateString(undefined,{day:'2-digit',month:'short'})}</span><div class="track"><div class="fill" style="--pct:${r.pct}%;--bar:${color(r.status)}"></div><i class="overflow-mark"></i></div><span class="week-value" style="color:${color(r.status)}">${fmt(r.load)} / ${fmt(r.capacity)}</span></div>`).join('')}</div><div class="dept-projects"><div class="dept-projects-title"><span>Global projects this month</span><span>${deptProjects.length}</span></div><div class="dept-project-list">${projectList}</div></div><div class="dept-foot"><span class="help">${issue?issue+' week'+(issue>1?'s':'')+' at risk':'All weeks have headroom'}</span><button class="link-btn manage-team" data-id="${d.id}">Manage team</button></div></article>`;
+    }).join('');
+    fillFilters();renderProjects();renderCalendar();
+  }
+
+  function fillFilters(){const opts=state.departments.map(d=>`<option value="${d.id}">${safe(d.name)}</option>`).join(''),cur=$('#deptFilter').value;$('#deptFilter').innerHTML='<option value="all">All departments</option>'+opts;if([...$('#deptFilter').options].some(o=>o.value===cur))$('#deptFilter').value=cur}
+  function projectStatus(p,extra=false){
+    const result=model(extra?p:null,extra?editingProject:null),affected=[];
+    p.assignments.forEach(a=>{const dept=result.find(d=>d.id===a.dept),al=allocation(a);dept?.rows.forEach(r=>{if(al[r.key]>0)affected.push(r.status)})});
+    return !affected.length?'outside':affected.includes('red')?'red':affected.includes('orange')?'orange':'green';
+  }
+  function renderProjects(){
+    const df=$('#deptFilter').value,tf=$('#typeFilter').value,list=state.projects.filter(p=>(df==='all'||p.assignments.some(a=>a.dept===df))&&(tf==='all'||p.type===tf));$('#projectCount').textContent=`${list.length} global project${list.length===1?'':'s'}`;
+    $('#projectRows').innerHTML=list.length?list.map(p=>{const people=p.assignments.map(a=>`${deptCode(a.dept)}: ${personLabel(person(a.dept,a.personId))}`),hours=p.assignments.reduce((s,a)=>s+(+a.hours||0),0),starts=p.assignments.map(a=>a.start).filter(Boolean).sort(),impact=projectStatus(p),label=impact==='red'?'Creates overload':impact==='orange'?'Uses available limit':impact==='outside'?'Outside selected month':'Fits plan';return `<tr><td><div class="project-name"><i class="project-swatch" style="background:${p.color}"></i>${safe(p.name)} <span class="type-pill ${p.type}">${p.type}</span></div><div class="subline">${p.assignments.length} person assignment${p.assignments.length===1?'':'s'}</div></td><td class="people-summary">${people.slice(0,3).map(safe).join('<br>')}${people.length>3?`<div class="subline">+${people.length-3} more</div>`:''}</td><td>${starts.length?parseDate(starts[0]).toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'}):'—'}</td><td><strong>${fmt(hours)}</strong></td><td><span class="status-text" style="--status:${impact==='outside'?'var(--muted)':color(impact)}">● ${label}</span></td><td><div class="row-actions"><button class="link-btn edit-project" data-id="${p.id}">Edit</button></div></td></tr>`}).join(''):'<tr><td colspan="6" class="empty">No global projects match these filters.</td></tr>';
+  }
+
+  function assignmentRow(a={id:uid(),dept:state.departments[0]?.id||'',personId:'',start:`${state.month}-01`,hours:40,pace:8}){
+    const dept=state.departments.find(d=>d.id===a.dept)||state.departments[0],people=dept?.people||[];if(!a.personId)a.personId=people[0]?.id||'';
+    const deptOpts=state.departments.map(d=>`<option value="${d.id}" ${d.id===a.dept?'selected':''}>${safe(d.name)}</option>`).join(''),personOpts=people.map(p=>`<option value="${p.id}" ${p.id===a.personId?'selected':''}>${safe(personLabel(p))}</option>`).join('');
+    return `<div class="assignment-row" data-assignment data-id="${a.id||uid()}"><div><label>Department</label><select class="assignment-dept">${deptOpts}</select></div><div><label>Employee</label><select class="assignment-person">${personOpts}</select></div><div><label>Start date</label><input class="assignment-start" type="date" value="${a.start||''}" required></div><div><label>Total hours</label><input class="assignment-hours" type="number" min="1" step="1" value="${+a.hours||40}" required></div><div><label>Hours/day</label><input class="assignment-pace" type="number" min="0.5" max="24" step="0.5" value="${+a.pace||8}" required></div><button type="button" class="remove-assignment" title="Remove assignment">×</button></div>`;
+  }
+  function refreshPeople(row){const dept=state.departments.find(d=>d.id===row.querySelector('.assignment-dept').value),sel=row.querySelector('.assignment-person'),current=sel.value;sel.innerHTML=(dept?.people||[]).map(p=>`<option value="${p.id}">${safe(personLabel(p))}</option>`).join('');if([...sel.options].some(o=>o.value===current))sel.value=current}
+  function draftProject(){return {id:editingProject||uid(),name:$('#projectName').value.trim()||'New project',type:$('#projectType').value,color:$('#projectColor').value,assignments:[...document.querySelectorAll('#assignmentRows [data-assignment]')].map(r=>({id:r.dataset.id||uid(),dept:r.querySelector('.assignment-dept').value,personId:r.querySelector('.assignment-person').value,start:r.querySelector('.assignment-start').value,hours:+r.querySelector('.assignment-hours').value,pace:+r.querySelector('.assignment-pace').value}))}}
+  function openProject(id=null){
+    editingProject=id;const p=id?state.projects.find(x=>x.id===id):null;$('#projectDialogTitle').textContent=p?'Edit global project':'Add global project';$('#projectName').value=p?.name||'';$('#projectType').value=p?.type||'proposed';$('#projectColor').value=p?.color||COLORS[state.projects.length%COLORS.length];$('#assignmentRows').innerHTML=(p?.assignments?.length?p.assignments:[{id:uid(),dept:state.departments[0].id,personId:state.departments[0].people[0]?.id,start:`${state.month}-01`,hours:40,pace:8}]).map(assignmentRow).join('');$('#deleteProjectBtn').style.display=p?'block':'none';preview();$('#projectDialog').showModal();
+  }
+  function preview(){
+    const p=draftProject(),el=$('#impactPreview');if(!p.assignments.length){el.className='impact orange';el.textContent='Add at least one employee assignment.';return}
+    if(p.assignments.some(a=>!a.personId)){el.className='impact red';el.textContent='Every assignment needs an employee.';return}
+    const exclusiveConflicts=dfirConflicts(p);if(exclusiveConflicts.length){el.className='impact red';el.textContent=`DFIR is exclusive: ${exclusiveConflicts.length} employee-day${exclusiveConflicts.length===1?'':'s'} overlap with other project work.`;return}
+    const personalConflicts=personCapacityConflicts(p);if(personalConflicts.length){const names=[...new Set(personalConflicts.map(c=>personLabel(c.p)))].join(', ');el.className='impact '+(p.type==='committed'?'red':'orange');el.textContent=p.type==='committed'?`${names} exceed their personal weekly capacity. Reassign or reduce their hours before committing.`:`Proposal warning: ${names} exceed personal weekly capacity. A project lead can delegate these assignments before commitment.`;return}
+    const status=projectStatus(p,true);el.className='impact '+(status==='red'?'red':status==='orange'?'orange':'');el.textContent=status==='red'?'These assignments would exceed department capacity in at least one week.':status==='orange'?'The project fits, but leaves at least one department at 90–100%.':status==='outside'?'These assignments do not fall within the selected planning month.':'All assignments fit and leave usable department capacity.';
+  }
+
+  function openTeam(id){
+    editingDept=id;const d=state.departments.find(x=>x.id===id),ws=weeks(),heads=ws.map(w=>`<th class="week-head">${w.from.toLocaleDateString(undefined,{day:'2-digit',month:'short'})}<small>Unavailable</small></th>`).join('');$('#teamTitle').textContent=`Manage ${d.name}`;$('#teamRows').innerHTML=`<table class="team-capacity-table"><thead><tr><th>Employee</th><th>Hours/week</th>${heads}<th></th></tr></thead><tbody id="teamPeopleRows">${d.people.map(personRow).join('')}</tbody></table>`;$('#teamDialog').showModal();
+  }
+  function personRow(p={id:uid(),name:'',hours:40,unavailableWeeks:[]}){const checks=weeks().map(w=>`<td><input class="week-check" type="checkbox" data-week="${w.key}" ${p.unavailableWeeks.includes(w.key)?'checked':''} title="Unavailable for week of ${w.from.toLocaleDateString()}"></td>`).join('');return `<tr data-person-row data-id="${p.id}"><td><input type="text" class="person-name name-input" value="${safe(p.name)}" placeholder="Name" required>${p.lead?'<span class="subline">Project lead (+)</span>':''}</td><td><input class="person-hours hours-input" type="number" min="0" max="80" step="1" value="${p.hours}" required></td>${checks}<td><button type="button" class="remove remove-person" title="Remove">×</button></td></tr>`}
+
+  function renderCalendar(){
+    const today=new Date(),start=new Date(today.getFullYear(),today.getMonth(),today.getDate(),12),day=start.getDay()||7;start.setDate(start.getDate()-day+1);const end=new Date(today.getFullYear(),today.getMonth()+3,0,12),dates=[];for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1))dates.push(new Date(d));
+    $('#timelineRange').textContent=`${start.toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})} – ${end.toLocaleDateString(undefined,{day:'2-digit',month:'short',year:'numeric'})}`;
+    const groups=[];dates.forEach(d=>{const key=`${d.getFullYear()}-${d.getMonth()}`,last=groups.at(-1);if(last?.key===key)last.count++;else groups.push({key,count:1,label:d.toLocaleDateString(undefined,{month:'long',year:'numeric'})})});
+    let html=`<div class="calendar-grid" style="--days:${dates.length}"><div class="cal-corner">Employee</div>${groups.map(g=>`<div class="cal-month" style="grid-column:span ${g.count}">${g.label}</div>`).join('')}<div class="cal-corner" style="top:30px">Department</div>${dates.map(d=>`<div class="cal-day"><strong>${d.getDate()}</strong><small>${d.toLocaleDateString(undefined,{weekday:'short'}).slice(0,2)}</small></div>`).join('')}`;
+    const uniquePeople=[...new Map(state.departments.flatMap(d=>d.people).map(p=>[p.id,p])).values()];
+    uniquePeople.forEach(p=>{
+      const memberships=state.departments.filter(d=>d.people.some(member=>member.id===p.id));
+      html+=`<div class="cal-name"><strong>${safe(personLabel(p))}</strong><span>${safe(memberships.map(d=>d.name).join(' / '))} · ${p.hours}h/week</span></div>`;
+      const entries={};state.projects.forEach(project=>project.assignments.filter(a=>a.personId===p.id).forEach(a=>Object.entries(allocationByDate(a)).forEach(([date,h])=>(entries[date]??=[]).push({project,a,h}))));
+      dates.forEach(d=>{const key=iso(d),items=entries[key]||[],weekend=d.getDay()===0||d.getDay()===6,unavailable=p.unavailableWeeks.includes(mondayKey(d)),dailyLoad=items.reduce((s,i)=>s+i.h,0),dfirOverlap=items.length>1&&items.some(i=>i.a.dept==='e'),conflict=(dailyLoad>p.hours/5+.001)||(unavailable&&items.length)||dfirOverlap,classes=['cal-cell',weekend?'weekend':'',unavailable&&!items.length?'unavailable':'',conflict?'conflict':'',key===iso(today)?'today':''].filter(Boolean).join(' ');let style='',text='',title='';if(items.length&&!conflict){const colors=items.map((item,i)=>`${item.project.color} ${i/items.length*100}% ${(i+1)/items.length*100}%`);style=`background:${items.length===1?items[0].project.color:`linear-gradient(135deg,${colors.join(',')})`}`;text=[...new Set(items.map(i=>deptCode(i.a.dept)))].join('');title=items.map(i=>`${i.project.name} (${deptCode(i.a.dept)}) · ${fmt(i.h)}`).join(' | ')}else if(conflict){text='!';title=dfirOverlap?'DFIR exclusive conflict':unavailable?'Scheduled while unavailable':`Daily load ${fmt(dailyLoad)} exceeds ${fmt(p.hours/5)}`}else if(unavailable&&!weekend){text='×';title=`${p.name} unavailable`}html+=`<div class="${classes}" style="${style}" title="${safe(title)}">${text}</div>`});
+    });
+    html+='</div>';$('#employeeCalendar').innerHTML=html;
+  }
+
+  function normalizeImportedPlan(data){
+    if(!data||typeof data!=='object'||!Array.isArray(data.departments)||!Array.isArray(data.projects)) throw new Error('This file is not a valid capacity-plan export.');
+    const imported=JSON.parse(JSON.stringify(data));
+    if(!/^\d{4}-\d{2}$/.test(imported.month||'')) imported.month=state.month;
+    imported.departments.forEach(d=>{
+      if(!d.id||!Array.isArray(d.people)) throw new Error('A department or employee list is invalid.');
+      const cfg=DEPARTMENT_CONFIG.find(c=>c.id===d.id);if(cfg){d.name=cfg.name;d.code=cfg.code}
+      d.people.forEach(p=>{p.id=p.id||uid();p.name=String(p.name||'Unnamed employee');p.hours=Math.max(0,+p.hours||0);p.lead=!!p.lead;p.unavailableWeeks=Array.isArray(p.unavailableWeeks)?[...new Set(p.unavailableWeeks)]:[]});
+    });
+    // Keep shared people synchronized after import.
+    const identities=new Map();
+    imported.departments.flatMap(d=>d.people).forEach(p=>{if(!identities.has(p.id))identities.set(p.id,{...p,unavailableWeeks:[...p.unavailableWeeks]});else{const canonical=identities.get(p.id);canonical.unavailableWeeks=[...new Set([...canonical.unavailableWeeks,...p.unavailableWeeks])];canonical.lead=canonical.lead||p.lead}});
+    imported.departments.forEach(d=>d.people=d.people.map(p=>({...p,...identities.get(p.id),unavailableWeeks:[...identities.get(p.id).unavailableWeeks]})));
+    imported.projects.forEach((p,i)=>{
+      p.id=p.id||uid();p.name=String(p.name||'Unnamed project');p.type=p.type==='committed'?'committed':'proposed';p.color=/^#[0-9a-f]{6}$/i.test(p.color||'')?p.color:COLORS[i%COLORS.length];
+      if(!Array.isArray(p.assignments)) throw new Error(`Project “${p.name}” has no valid assignment list.`);
+      p.assignments.forEach(a=>{a.id=a.id||uid();a.dept=String(a.dept||'');a.personId=String(a.personId||'');if(!/^\d{4}-\d{2}-\d{2}$/.test(a.start||''))throw new Error(`Project “${p.name}” contains an invalid start date.`);a.hours=Math.max(0,+a.hours||0);a.pace=Math.max(.5,+a.pace||8)});
+    });
+    return imported;
+  }
+  function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)}
+  $('#addProjectBtn').onclick=()=>openProject();
+  $('#projectForm').addEventListener('submit',e=>{e.preventDefault();if(!e.target.reportValidity())return;const p=draftProject();if(!p.assignments.length){toast('Add at least one employee');return}if(p.assignments.some(a=>!a.personId)){toast('Select an employee for every assignment');return}if(dfirConflicts(p).length){toast('DFIR assignments cannot overlap other project work');return}if(p.type==='committed'&&personCapacityConflicts(p).length){toast('An employee exceeds their weekly capacity');return}if(editingProject)state.projects=state.projects.map(x=>x.id===editingProject?p:x);else state.projects.push(p);const persisted=save();$('#projectDialog').close();render();toast(persisted?'Global project saved':'Project added for this session')});
+  $('#deleteProjectBtn').onclick=()=>{if(editingProject&&confirm('Delete this global project and all its assignments?')){state.projects=state.projects.filter(p=>p.id!==editingProject);save();$('#projectDialog').close();render();toast('Project deleted')}};
+  $('#addAssignmentBtn').onclick=()=>{$('#assignmentRows').insertAdjacentHTML('beforeend',assignmentRow());preview()};
+  $('#assignmentRows').addEventListener('input',e=>{const row=e.target.closest('[data-assignment]');if(e.target.matches('.assignment-dept'))refreshPeople(row);preview()});
+  $('#assignmentRows').addEventListener('click',e=>{if(e.target.closest('.remove-assignment')){e.target.closest('[data-assignment]').remove();preview()}});
+  ['projectName','projectType','projectColor'].forEach(id=>$('#'+id).addEventListener('input',preview));
+  $('#teamForm').addEventListener('submit',e=>{e.preventDefault();if(!e.target.reportValidity())return;const people=[...document.querySelectorAll('#teamPeopleRows [data-person-row]')].map(r=>({id:r.dataset.id,name:r.querySelector('.person-name').value.trim(),lead:!!globalPerson(r.dataset.id)?.lead,hours:+r.querySelector('.person-hours').value,unavailableWeeks:[...r.querySelectorAll('.week-check:checked')].map(c=>c.dataset.week)}));state.departments.find(d=>d.id===editingDept).people=people;people.forEach(updated=>state.departments.forEach(d=>d.people=d.people.map(p=>p.id===updated.id?{...p,...updated}:p)));const persisted=save();$('#teamDialog').close();render();toast(persisted?'Weekly availability saved':'Availability applied for this session')});
+  $('#addPersonBtn').onclick=()=>$('#teamPeopleRows').insertAdjacentHTML('beforeend',personRow());
+  document.addEventListener('click',e=>{const c=e.target.closest('[data-close]');if(c)$('#'+c.dataset.close).close();const m=e.target.closest('.manage-team');if(m)openTeam(m.dataset.id);const ep=e.target.closest('.edit-project');if(ep)openProject(ep.dataset.id);const rp=e.target.closest('.remove-person');if(rp)rp.closest('[data-person-row]').remove()});
+  $('#monthPicker').onchange=e=>{state.month=e.target.value;save();render()};$('#deptFilter').onchange=renderProjects;$('#typeFilter').onchange=renderProjects;
+  $('#resetBtn').onclick=()=>{if(confirm('Restore the sample departments and global projects?')){state=defaults();save();render();toast('Sample restored')}};
+  $('#importBtn').onclick=()=>$('#importFile').click();
+  $('#importFile').addEventListener('change',async e=>{
+    const file=e.target.files?.[0];if(!file)return;
+    try{
+      const imported=normalizeImportedPlan(JSON.parse(await file.text()));
+      if(!confirm(`Import “${file.name}” and replace the current plan?`))return;
+      state=imported;const persisted=save();render();toast(persisted?'Plan imported':'Plan imported for this session');
+    }catch(error){alert(`Import failed: ${error.message}`)}finally{e.target.value=''}
+  });
+  $('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`capacity-plan-${state.month}.json`;a.click();URL.revokeObjectURL(a.href);toast('Plan exported')};
+  render();
+})();
+</script>
+</body>
+</html>
